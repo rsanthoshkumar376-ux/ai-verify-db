@@ -6,21 +6,38 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
 
-import_error_trace = None
+real_app = None
+init_error = None
 
 try:
-    from app.main import app as real_app
-    app = real_app
+    from app.main import app as _loaded_app
+    real_app = _loaded_app
 except Exception as exc:
-    import_error_trace = traceback.format_exc()
-    from fastapi import FastAPI
-    from fastapi.responses import PlainTextResponse
-    
-    app = FastAPI(title="Diagnostic App")
-    
-    @app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"])
-    async def error_reporter(path: str):
-        return PlainTextResponse(
-            f"=== FASTAPI COLD START IMPORT EXCEPTION ===\n\n{import_error_trace}",
-            status_code=500
-        )
+    init_error = traceback.format_exc()
+    print("FATAL IMPORT EXCEPTION IN app.main:", file=sys.stderr)
+    print(init_error, file=sys.stderr)
+
+if real_app is not None:
+    app = real_app
+else:
+    # Pure Python ASGI fallback with zero external dependencies
+    async def app(scope, receive, send):
+        if scope.get("type") == "http":
+            body = (
+                f"=== FASTAPI COLD START IMPORT EXCEPTION ===\n\n"
+                f"{init_error}\n\n"
+                f"Python: {sys.version}\n"
+                f"sys.path: {sys.path}\n"
+                f"cwd: {os.getcwd()}\n"
+                f"files in cwd: {os.listdir('.')}\n"
+            ).encode("utf-8")
+            await send({
+                "type": "http.response.start",
+                "status": 500,
+                "headers": [[b"content-type", b"text/plain; charset=utf-8"]],
+            })
+            await send({
+                "type": "http.response.body",
+                "body": body,
+                "more_body": False,
+            })
