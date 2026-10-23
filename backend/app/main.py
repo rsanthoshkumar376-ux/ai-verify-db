@@ -27,12 +27,6 @@ async def lifespan(app: FastAPI):
     yield
     logger.info("Application shutting down.")
 
-# Explicitly ensure database schema is initialized at import time for serverless runtimes
-try:
-    init_db()
-except Exception as e:
-    logger.warning(f"Startup database schema check: {e}")
-
 app = FastAPI(
     title=settings.PROJECT_NAME,
     description="AI-Assisted Application Validation, Document Authentication & Regulatory Compliance Verification Platform",

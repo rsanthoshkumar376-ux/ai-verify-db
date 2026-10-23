@@ -7,10 +7,3 @@ if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
 
 from app.main import app
-
-# Ensure schemas and seeds are ready on serverless cold starts
-from app.db.init_db import init_db
-try:
-    init_db()
-except Exception as exc:
-    print(f"[Vercel Init Notice]: {exc}")
