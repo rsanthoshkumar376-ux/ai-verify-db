@@ -1,6 +1,7 @@
 import os
 from pydantic_settings import BaseSettings
-from typing import List
+from pydantic import field_validator
+from typing import List, Any
 
 is_serverless = (
     os.getenv("VERCEL", "") == "1" 
@@ -10,10 +11,20 @@ is_serverless = (
 )
 
 def _get_database_url() -> str:
-    raw = os.getenv("DATABASE_URL")
-    if raw:
+    raw = (os.getenv("DATABASE_URL") or "").strip()
+    # Only use remote DB if it is a real connection string and not a placeholder like '<Your Neon PostgreSQL URL>'
+    if (
+        raw 
+        and not raw.startswith("<") 
+        and not raw.startswith("[") 
+        and not raw.startswith("YOUR_") 
+        and "example.com" not in raw.lower()
+        and (raw.startswith("postgresql://") or raw.startswith("postgres://") or raw.startswith("sqlite://"))
+    ):
         if raw.startswith("postgres://"):
-            raw = raw.replace("postgres://", "postgresql://", 1)
+            raw = raw.replace("postgres://", "postgresql+pg8000://", 1)
+        elif raw.startswith("postgresql://") and "+pg8000" not in raw and "+psycopg" not in raw:
+            raw = raw.replace("postgresql://", "postgresql+pg8000://", 1)
         return raw
     # Automatically use /tmp/ai_verify.db in serverless/container environments
     db_path = "/tmp/ai_verify.db" if is_serverless else "./ai_verify.db"
@@ -34,6 +45,26 @@ class Settings(BaseSettings):
     
     # Database
     DATABASE_URL: str = _get_database_url()
+    
+    @field_validator("DATABASE_URL", mode="before")
+    @classmethod
+    def sanitize_database_url(cls, v: Any) -> str:
+        raw = str(v or "").strip()
+        if (
+            raw 
+            and not raw.startswith("<") 
+            and not raw.startswith("[") 
+            and not raw.startswith("YOUR_") 
+            and "example" not in raw.lower()
+            and (raw.startswith("postgresql://") or raw.startswith("postgres://") or raw.startswith("sqlite://"))
+        ):
+            if raw.startswith("postgres://"):
+                raw = raw.replace("postgres://", "postgresql+pg8000://", 1)
+            elif raw.startswith("postgresql://") and "+pg8000" not in raw and "+psycopg" not in raw:
+                raw = raw.replace("postgresql://", "postgresql+pg8000://", 1)
+            return raw
+        db_path = "/tmp/ai_verify.db" if is_serverless else "./ai_verify.db"
+        return f"sqlite:///{db_path}"
     
     # Private storage directory for uploaded documents
     STORAGE_DIR: str = _get_storage_dir()
