@@ -38,3 +38,28 @@ def test_admin_login(client):
     })
     assert response.status_code == 200
     assert response.json()["user"]["role"] == "ADMIN"
+
+def test_register_new_applicant(client):
+    import uuid
+    random_email = f"user_{uuid.uuid4().hex[:8]}@aiverify.org"
+    response = client.post("/api/v1/auth/register", json={
+        "email": random_email,
+        "password": "StrongPassword123!",
+        "full_name": "Test Applicant",
+        "organization": "Test Org"
+    })
+    assert response.status_code == 201
+    data = response.json()
+    assert "access_token" in data
+    assert data["user"]["email"] == random_email
+    assert data["user"]["role"] == "APPLICANT"
+
+def test_register_duplicate_email(client):
+    # Try registering with existing seeded email
+    response = client.post("/api/v1/auth/register", json={
+        "email": "applicant@aiverify.org",
+        "password": "AnotherPassword123!",
+        "full_name": "Duplicate User"
+    })
+    assert response.status_code == 400
+    assert "already exists" in response.json()["detail"].lower()

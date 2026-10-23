@@ -27,6 +27,12 @@ async def lifespan(app: FastAPI):
     yield
     logger.info("Application shutting down.")
 
+# Explicitly ensure database schema is initialized at import time for serverless runtimes
+try:
+    init_db()
+except Exception as e:
+    logger.warning(f"Startup database schema check: {e}")
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     description="AI-Assisted Application Validation, Document Authentication & Regulatory Compliance Verification Platform",
@@ -74,7 +80,8 @@ def root_index():
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     logger.error(f"Unhandled system exception: {exc}", exc_info=True)
+    detail_msg = str(exc) if (settings.DEMO_MODE or os.getenv("DEBUG") == "1") else "An internal server error occurred. Please contact compliance support."
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content={"detail": "An internal server error occurred. Please contact compliance support."}
+        content={"detail": detail_msg}
     )

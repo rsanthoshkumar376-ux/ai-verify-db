@@ -8,9 +8,29 @@ from app.core.config import settings
 from app.db.session import SessionLocal
 from app.models.user import User, UserRole
 
+import logging
+logger = logging.getLogger("ai_verify")
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login")
 
+_db_initialized = False
+
+def ensure_db_initialized():
+    """
+    Guarantees database tables exist and are initialized on serverless environments
+    where ASGI lifespan events do not execute automatically.
+    """
+    global _db_initialized
+    if not _db_initialized:
+        try:
+            from app.db.init_db import init_db
+            init_db()
+            _db_initialized = True
+        except Exception as e:
+            logger.error(f"Automatic DB schema initialization warning: {e}")
+
 def get_db() -> Generator[Session, None, None]:
+    ensure_db_initialized()
     db = SessionLocal()
     try:
         yield db

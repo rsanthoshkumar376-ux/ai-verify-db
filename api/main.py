@@ -39,6 +39,11 @@ if not BACKEND_URL:
         if backend_dir not in sys.path:
             sys.path.insert(0, backend_dir)
         from app.main import app as imported_backend_app
+        from app.db.init_db import init_db
+        try:
+            init_db()
+        except Exception:
+            pass
         backend_app = imported_backend_app
         logger.info("Local backend imported as fallback (no BACKEND_URL binding found)")
     except Exception as e:
