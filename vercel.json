@@ -5,18 +5,6 @@
       "root": "frontend",
       "framework": "vite"
     },
-    "api": {
-      "root": "api",
-      "framework": "fastapi",
-      "bindings": [
-        {
-          "type": "service",
-          "service": "backend",
-          "format": "url",
-          "env": "BACKEND_URL"
-        }
-      ]
-    },
     "backend": {
       "root": "backend",
       "framework": "fastapi"
@@ -26,7 +14,7 @@
     {
       "source": "/api/(.*)",
       "destination": {
-        "service": "api"
+        "service": "backend"
       }
     },
     {
