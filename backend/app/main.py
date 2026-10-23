@@ -50,6 +50,7 @@ app.add_middleware(
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
 @app.get("/health", tags=["System"])
+@app.get("/api/health", tags=["System"])
 def health_check():
     return {
         "status": "healthy",
@@ -61,6 +62,7 @@ def health_check():
     }
 
 @app.get("/", tags=["System"])
+@app.get("/api", tags=["System"])
 def root_index():
     return {
         "message": "AI Verify API Gateway is online.",
