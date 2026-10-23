@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+backend/venv/
+venv/
+ENV/
+*.db
+*.sqlite3
+
+# Node & Frontend
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+
+# Testing & Cache
+.pytest_cache/
+.coverage
+htmlcov/
+*.tsbuildinfo
+
+# Uploaded storage files (do not commit uploaded files)
+backend/storage_data/*.pdf
+backend/storage_data/*.png
+backend/storage_data/*.jpg
+backend/storage_data/*.jpeg
+backend/storage_data/reports/*.pdf
+!backend/storage_data/.gitkeep
+
+# Operating System
+.DS_Store
+Thumbs.db
