@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShieldCheck, Menu, X, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Menu, X, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '../ui/Button';
+import { ThemeToggle } from './ThemeToggle';
+import { NotificationDropdown } from './NotificationDropdown';
 
 export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -12,6 +14,7 @@ export const Navbar: React.FC = () => {
   const navLinks = [
     { label: 'How It Works', path: '/how-it-works' },
     { label: 'Platform Architecture', path: '/about' },
+    { label: 'Verify Certificate', path: '/verify' },
     { label: 'Compliance Standards', path: '/how-it-works#compliance' },
     { label: 'Contact', path: '/contact' },
   ];
@@ -24,7 +27,7 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80">
+    <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand Logo */}
         <Link to="/" className="flex items-center gap-2.5 group">
@@ -32,10 +35,10 @@ export const Navbar: React.FC = () => {
             <ShieldCheck className="w-5 h-5 stroke-[2.2]" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold text-slate-900 tracking-tight text-lg leading-none">
+            <span className="font-bold text-slate-900 dark:text-white tracking-tight text-lg leading-none">
               AI Verify
             </span>
-            <span className="text-[10px] text-slate-500 font-medium tracking-wider uppercase mt-0.5">
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium tracking-wider uppercase mt-0.5">
               Compliance Intelligence
             </span>
           </div>
@@ -47,8 +50,8 @@ export const Navbar: React.FC = () => {
             <Link
               key={link.path}
               to={link.path}
-              className={`text-sm font-medium transition-colors hover:text-indigo-600 ${
-                location.pathname === link.path ? 'text-indigo-600' : 'text-slate-600'
+              className={`text-sm font-medium transition-colors hover:text-indigo-600 dark:hover:text-indigo-400 ${
+                location.pathname === link.path ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-600 dark:text-slate-300'
               }`}
             >
               {link.label}
@@ -58,6 +61,8 @@ export const Navbar: React.FC = () => {
 
         {/* Desktop CTAs */}
         <div className="hidden md:flex items-center gap-3">
+          <ThemeToggle />
+          <NotificationDropdown />
           {user ? (
             <Link to={getDashboardPath()}>
               <Button variant="primary" size="sm" rightIcon={<ArrowRight className="w-4 h-4" />}>
@@ -80,11 +85,13 @@ export const Navbar: React.FC = () => {
           )}
         </div>
 
-        {/* Mobile menu button */}
-        <div className="flex md:hidden">
+        {/* Mobile menu button & controls */}
+        <div className="flex md:hidden items-center gap-2">
+          <ThemeToggle />
+          <NotificationDropdown />
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 text-slate-600 hover:text-slate-900 focus:outline-none"
+            className="p-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white focus:outline-none"
             aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}

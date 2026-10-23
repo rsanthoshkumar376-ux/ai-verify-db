@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { History, Search, Shield, Eye, Calendar } from 'lucide-react';
+import { History, Search, Shield, Eye, Calendar, Download } from 'lucide-react';
 import { api } from '../../services/api';
 import { AuditEventItem } from '../../types';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
+import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
 import { TableSkeleton } from '../../components/common/LoadingSkeleton';
 
@@ -28,6 +29,28 @@ export const AuditLogsPage: React.FC = () => {
     fetchLogs();
   }, [actionFilter]);
 
+  const handleExportAuditCSV = () => {
+    if (logs.length === 0) return;
+    const headers = ['Event ID', 'Action', 'Resource Type', 'Resource ID', 'User Email', 'IP Address', 'Timestamp'];
+    const rows = logs.map(l => [
+      `"${l.id}"`,
+      `"${l.action}"`,
+      `"${l.resource_type || ''}"`,
+      `"${l.resource_id || ''}"`,
+      `"${l.user_email || ''}"`,
+      `"${l.ip_address || ''}"`,
+      `"${new Date(l.created_at).toISOString()}"`
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `ai_verify_audit_log_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -40,6 +63,15 @@ export const AuditLogsPage: React.FC = () => {
             Immutable log of logins, document submissions, automated verification runs, and reviewer determinations.
           </p>
         </div>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleExportAuditCSV}
+          leftIcon={<Download className="w-4 h-4" />}
+        >
+          Export Log (CSV)
+        </Button>
       </div>
 
       <Card>

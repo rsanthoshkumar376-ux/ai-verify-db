@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
+import { LiveScannerSandbox } from '../../components/common/LiveScannerSandbox';
 
 export const LandingPage: React.FC = () => {
   const faqs = [
@@ -165,6 +166,13 @@ export const LandingPage: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Live Interactive Verification Sandbox */}
+      <section className="py-16 bg-slate-100/70 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <LiveScannerSandbox />
         </div>
       </section>
 

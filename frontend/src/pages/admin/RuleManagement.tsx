@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldAlert, Plus, ToggleLeft, ToggleRight, Search, CheckCircle2, Info } from 'lucide-react';
+import { ShieldAlert, Plus, ToggleLeft, ToggleRight, Search, CheckCircle2, Info, Sparkles, Layers, ShieldCheck } from 'lucide-react';
 import { api } from '../../services/api';
 import { ComplianceRule } from '../../types';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
@@ -137,6 +137,113 @@ export const RuleManagementPage: React.FC = () => {
         <Info className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
         <div>
           <span className="font-bold">Demonstration Policy Notice:</span> Sample compliance rules are labeled "Demonstration Rule — Not Legal Advice". Rule formulations must be reviewed and certified by qualified sector compliance counsel prior to legal reliance.
+        </div>
+      </div>
+
+      {/* 1-Click Rule Packs */}
+      <div className="bg-gradient-to-r from-indigo-50 via-white to-slate-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 p-5 rounded-2xl border border-indigo-100 dark:border-slate-800">
+        <div className="flex items-center gap-2 mb-3">
+          <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+          <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+            Pre-Built Regulatory Rule Packs
+          </h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+          <div className="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col justify-between">
+            <div>
+              <span className="font-bold text-slate-900 dark:text-white block mb-1">KYC / AML Identity Standard</span>
+              <p className="text-slate-500 text-[11px] leading-relaxed">
+                Mandates unexpired government credential and legal name reconciliation.
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                setNewRule({
+                  rule_code: `KYC-ID-${Date.now().toString().slice(-4)}`,
+                  name: 'Mandatory Government ID Validity',
+                  description: 'Ensures passport or driver license has at least 6 months validity remaining.',
+                  jurisdiction: 'GLOBAL',
+                  application_category: 'ALL',
+                  document_type: 'PASSPORT',
+                  rule_source: 'FinCEN / FATF Guidance',
+                  version: '2.0.0',
+                  severity: 'ERROR',
+                  validation_type: 'document_not_expired',
+                  numeric_field: '',
+                  numeric_operator: '<=',
+                  numeric_threshold: 0,
+                });
+                setCreateModalOpen(true);
+              }}
+              className="mt-3 text-indigo-600 dark:text-indigo-400 hover:underline font-semibold text-[11px] text-left cursor-pointer"
+            >
+              + Use Template
+            </button>
+          </div>
+
+          <div className="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col justify-between">
+            <div>
+              <span className="font-bold text-slate-900 dark:text-white block mb-1">SOC 2 / ISO 27001 Security</span>
+              <p className="text-slate-500 text-[11px] leading-relaxed">
+                Requires accredited third-party cybersecurity surveillance audit report.
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                setNewRule({
+                  rule_code: `SEC-SOC-${Date.now().toString().slice(-4)}`,
+                  name: 'SOC 2 Type II Surveillance Audit',
+                  description: 'Validates that the vendor audit report was completed within the past 12 months.',
+                  jurisdiction: 'US/EU',
+                  application_category: 'VENDOR_COMPLIANCE',
+                  document_type: 'COMPLIANCE_CERTIFICATE',
+                  rule_source: 'AICPA Trust Services Criteria',
+                  version: '1.2.0',
+                  severity: 'ERROR',
+                  validation_type: 'document_not_expired',
+                  numeric_field: '',
+                  numeric_operator: '<=',
+                  numeric_threshold: 0,
+                });
+                setCreateModalOpen(true);
+              }}
+              className="mt-3 text-indigo-600 dark:text-indigo-400 hover:underline font-semibold text-[11px] text-left cursor-pointer"
+            >
+              + Use Template
+            </button>
+          </div>
+
+          <div className="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col justify-between">
+            <div>
+              <span className="font-bold text-slate-900 dark:text-white block mb-1">Financial Solvency Threshold</span>
+              <p className="text-slate-500 text-[11px] leading-relaxed">
+                Automated check verifying annual gross revenue meets grant/loan minimums.
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                setNewRule({
+                  rule_code: `FIN-REV-${Date.now().toString().slice(-4)}`,
+                  name: 'Minimum Gross Operating Revenue',
+                  description: 'Ensures reported gross income meets minimum qualification floor.',
+                  jurisdiction: 'FEDERAL',
+                  application_category: 'FINANCIAL_AID',
+                  document_type: 'TAX_RETURN',
+                  rule_source: 'Uniform Grant Guidance 2 CFR 200',
+                  version: '1.0.0',
+                  severity: 'WARNING',
+                  validation_type: 'numeric_threshold',
+                  numeric_field: 'annual_income',
+                  numeric_operator: '>=',
+                  numeric_threshold: 50000,
+                });
+                setCreateModalOpen(true);
+              }}
+              className="mt-3 text-indigo-600 dark:text-indigo-400 hover:underline font-semibold text-[11px] text-left cursor-pointer"
+            >
+              + Use Template
+            </button>
+          </div>
         </div>
       </div>
 

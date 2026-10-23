@@ -10,6 +10,7 @@ import {
   ArrowRight,
   ShieldAlert,
   UserCheck,
+  Download,
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { ApplicationListItem } from '../../types';
@@ -62,6 +63,27 @@ export const ReviewerDashboard: React.FC = () => {
   const verifiedCount = applications.filter((a) => a.status === 'VERIFIED').length;
   const needsInfoCount = applications.filter((a) => a.status === 'NEEDS_INFORMATION').length;
 
+  const handleExportCSV = () => {
+    if (applications.length === 0) return;
+    const headers = ['Reference No', 'Category', 'Applicant', 'Status', 'Risk Score', 'Created At'];
+    const rows = filteredApps.map(a => [
+      `"${a.reference_no}"`,
+      `"${a.category_name || ''}"`,
+      `"${a.applicant_name || ''}"`,
+      `"${a.status}"`,
+      `"${a.current_risk_score || 'N/A'}"`,
+      `"${new Date(a.created_at).toISOString()}"`
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `ai_verify_applications_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="space-y-6">
       {/* Reviewer Header */}
@@ -77,6 +99,15 @@ export const ReviewerDashboard: React.FC = () => {
             Conduct side-by-side document extractions, evaluate preliminary AI findings, and record reasoned determinations.
           </p>
         </div>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleExportCSV}
+          leftIcon={<Download className="w-4 h-4" />}
+        >
+          Export Queue (CSV)
+        </Button>
       </div>
 
       {/* Review Metrics */}

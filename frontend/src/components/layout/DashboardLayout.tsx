@@ -17,6 +17,7 @@ import { NotificationItem } from '../../types';
 import { Sidebar } from './Sidebar';
 import { DemoBanner } from '../common/DemoBanner';
 import { Button } from '../ui/Button';
+import { ThemeToggle } from './ThemeToggle';
 
 export const DashboardLayout: React.FC = () => {
   const { user, logout } = useAuth();
@@ -115,7 +116,8 @@ export const DashboardLayout: React.FC = () => {
               </h2>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
               {/* Notification Popover */}
               <div className="relative">
                 <button

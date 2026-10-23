@@ -2,6 +2,8 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
+import { ThemeProvider } from './context/ThemeContext';
+import { NotificationProvider } from './context/NotificationContext';
 import { UserRole } from './types';
 
 // Layouts
@@ -15,6 +17,7 @@ import { HowItWorksPage } from './pages/public/HowItWorksPage';
 import { AboutPage } from './pages/public/AboutPage';
 import { ContactPage } from './pages/public/ContactPage';
 import { PrivacyPolicyPage, TermsOfServicePage } from './pages/public/LegalPages';
+import { VerificationPortal } from './pages/public/VerificationPortal';
 
 // Auth Pages
 import { LoginPage } from './pages/auth/LoginPage';
@@ -74,19 +77,23 @@ const ProtectedRoute: React.FC<{ allowedRoles?: UserRole[] }> = ({ allowedRoles 
 
 export const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <ToastProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* Public Marketing Routes */}
-            <Route element={<PublicLayout />}>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/how-it-works" element={<HowItWorksPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/privacy" element={<PrivacyPolicyPage />} />
-              <Route path="/terms" element={<TermsOfServicePage />} />
-            </Route>
+    <ThemeProvider>
+      <AuthProvider>
+        <NotificationProvider>
+          <ToastProvider>
+            <BrowserRouter>
+              <Routes>
+                {/* Public Marketing Routes */}
+                <Route element={<PublicLayout />}>
+                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/how-it-works" element={<HowItWorksPage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="/verify" element={<VerificationPortal />} />
+                  <Route path="/verify/:reportCode" element={<VerificationPortal />} />
+                  <Route path="/contact" element={<ContactPage />} />
+                  <Route path="/privacy" element={<PrivacyPolicyPage />} />
+                  <Route path="/terms" element={<TermsOfServicePage />} />
+                </Route>
 
             {/* Auth Routes */}
             <Route path="/login" element={<LoginPage />} />
@@ -122,7 +129,9 @@ export const App: React.FC = () => {
           </Routes>
         </BrowserRouter>
       </ToastProvider>
-    </AuthProvider>
+    </NotificationProvider>
+  </AuthProvider>
+</ThemeProvider>
   );
 };
 
