@@ -36,15 +36,18 @@ from app.services.storage import calculate_sha256
 
 def create_synthetic_pdf(filepath: str, title: str, body_text: str):
     """Generates a clean synthetic PDF file on disk for demonstration testing."""
-    os.makedirs(os.path.dirname(filepath), exist_ok=True)
-    doc = SimpleDocTemplate(filepath, pagesize=letter)
-    styles = getSampleStyleSheet()
-    story = [
-        Paragraph(f"<b>{title}</b>", styles["Title"]),
-        Spacer(1, 14),
-        Paragraph(body_text.replace("\n", "<br/>"), styles["Normal"])
-    ]
-    doc.build(story)
+    try:
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        doc = SimpleDocTemplate(filepath, pagesize=letter)
+        styles = getSampleStyleSheet()
+        story = [
+            Paragraph(f"<b>{title}</b>", styles["Title"]),
+            Spacer(1, 14),
+            Paragraph(body_text.replace("\n", "<br/>"), styles["Normal"])
+        ]
+        doc.build(story)
+    except Exception as exc:
+        print(f"Notice: Synthetic PDF disk write skipped: {exc}")
 
 def seed_database(db: Session):
     # Check if already seeded
@@ -82,7 +85,7 @@ def seed_database(db: Session):
         created_at=datetime.now(timezone.utc)
     )
     db.add_all([admin_user, reviewer_user, applicant_user])
-    db.flush()
+    db.commit()
 
     # 2. CATEGORIES
     cat_scholarship = ApplicationCategory(
@@ -310,8 +313,11 @@ def seed_database(db: Session):
         "OFFICIAL CITIZENSHIP PASSPORT RECORD",
         "Holder Legal Name: Sarah Jenkins\nDocument Number: P-9842103\nNationality: United States\nDate of Birth: 1999-04-14\nIssue Date: 2022-06-10\nExpiry Date: 2032-06-10\nIssuing Authority: Department of State Passport Agency"
     )
-    with open(doc1_path, "rb") as f:
-        doc1_bytes = f.read()
+    try:
+        with open(doc1_path, "rb") as f:
+            doc1_bytes = f.read()
+    except Exception:
+        doc1_bytes = b"%PDF-1.4 Official Passport Synthetic Demo File"
 
     doc1 = Document(
         application_id=app1.id,
@@ -459,8 +465,11 @@ def seed_database(db: Session):
         "CERTIFICATE OF CORPORATE FORMATION & INCORPORATION",
         "Entity Name: Artisan Harvest Bakehouse LLC\nRegistration Number: CORP-992144-DE\nAuthorized Managing Member: Sarah Jenkins\nDate of Filing: 2023-01-15\nJurisdiction: State Division of Corporations\nStatus: Active and in Good Standing"
     )
-    with open(doc2_path, "rb") as f:
-        doc2_bytes = f.read()
+    try:
+        with open(doc2_path, "rb") as f:
+            doc2_bytes = f.read()
+    except Exception:
+        doc2_bytes = b"%PDF-1.4 Certificate of Incorporation Synthetic Demo File"
 
     doc2 = Document(
         application_id=app2.id,

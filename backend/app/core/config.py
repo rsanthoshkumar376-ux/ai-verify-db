@@ -2,16 +2,28 @@ import os
 from pydantic_settings import BaseSettings
 from typing import List
 
-is_serverless = os.getenv("VERCEL", "") == "1" or "AWS_LAMBDA_FUNCTION_NAME" in os.environ
+is_serverless = (
+    os.getenv("VERCEL", "") == "1" 
+    or "AWS_LAMBDA_FUNCTION_NAME" in os.environ
+    or os.getenv("VERCEL_ENV") is not None
+    or (os.path.exists("/tmp") and os.access("/tmp", os.W_OK))
+)
 
 def _get_database_url() -> str:
-    raw = os.getenv("DATABASE_URL", f"sqlite:///{'/tmp/ai_verify.db' if is_serverless else './ai_verify.db'}")
-    if raw.startswith("postgres://"):
-        raw = raw.replace("postgres://", "postgresql://", 1)
-    return raw
+    raw = os.getenv("DATABASE_URL")
+    if raw:
+        if raw.startswith("postgres://"):
+            raw = raw.replace("postgres://", "postgresql://", 1)
+        return raw
+    # Automatically use /tmp/ai_verify.db in serverless/container environments
+    db_path = "/tmp/ai_verify.db" if is_serverless else "./ai_verify.db"
+    return f"sqlite:///{db_path}"
 
 def _get_storage_dir() -> str:
-    return os.getenv("STORAGE_DIR", "/tmp/storage_data" if is_serverless else "./storage_data")
+    custom = os.getenv("STORAGE_DIR")
+    if custom:
+        return custom
+    return "/tmp/storage_data" if is_serverless else "./storage_data"
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "AI Verify — Intelligent Application & Compliance Platform"
