@@ -106,7 +106,7 @@ def download_report(
 
     rep = (
         db.query(GeneratedReport)
-        .filter(GeneratedReport.application_id == application_id)
+        .filter(GeneratedReport.application_id == app.id)
         .order_by(GeneratedReport.created_at.desc())
         .first()
     )
@@ -115,17 +115,18 @@ def download_report(
     if not rep or not os.path.exists(rep.pdf_path):
         v_run = (
             db.query(VerificationRun)
-            .filter(VerificationRun.application_id == application_id)
+            .filter(VerificationRun.application_id == app.id)
             .order_by(VerificationRun.created_at.desc())
             .first()
         )
         if not v_run:
             try:
                 from app.api.v1.endpoints.applications import execute_verification_pipeline
-                execute_verification_pipeline(application_id, db, current_user.id)
+                caller_id = current_user.id if current_user else app.applicant_id
+                execute_verification_pipeline(app.id, db, caller_id)
                 v_run = (
                     db.query(VerificationRun)
-                    .filter(VerificationRun.application_id == application_id)
+                    .filter(VerificationRun.application_id == app.id)
                     .order_by(VerificationRun.created_at.desc())
                     .first()
                 )
@@ -144,7 +145,7 @@ def download_report(
             rep = GeneratedReport(
                 report_code=report_code,
                 application_id=app.id,
-                generated_by_id=current_user.id,
+                generated_by_id=current_user.id if current_user else app.applicant_id,
                 report_title=f"Verification Report — {app.reference_no}",
                 pdf_filename=f"{report_code}.pdf",
                 pdf_path=pdf_path,
