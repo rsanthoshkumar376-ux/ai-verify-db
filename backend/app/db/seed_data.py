@@ -56,8 +56,13 @@ def seed_database(db: Session):
 
     print("Initializing AI Verify database with comprehensive synthetic seed data...")
 
-    # 1. USERS
+    # 1. USERS WITH DETERMINISTIC UUIDs
+    ADMIN_USER_ID = "00000000-0000-0000-0000-000000000001"
+    REVIEWER_USER_ID = "00000000-0000-0000-0000-000000000002"
+    APPLICANT_USER_ID = "00000000-0000-0000-0000-000000000003"
+
     admin_user = User(
+        id=ADMIN_USER_ID,
         email="admin@aiverify.org",
         hashed_password=get_password_hash("Admin123!"),
         full_name="Elena Rostova",
@@ -67,6 +72,7 @@ def seed_database(db: Session):
         created_at=datetime.now(timezone.utc)
     )
     reviewer_user = User(
+        id=REVIEWER_USER_ID,
         email="reviewer@aiverify.org",
         hashed_password=get_password_hash("Reviewer123!"),
         full_name="Marcus Vance",
@@ -76,6 +82,7 @@ def seed_database(db: Session):
         created_at=datetime.now(timezone.utc)
     )
     applicant_user = User(
+        id=APPLICANT_USER_ID,
         email="applicant@aiverify.org",
         hashed_password=get_password_hash("Applicant123!"),
         full_name="Sarah Jenkins",
@@ -87,8 +94,14 @@ def seed_database(db: Session):
     db.add_all([admin_user, reviewer_user, applicant_user])
     db.commit()
 
-    # 2. CATEGORIES
+    # 2. CATEGORIES WITH DETERMINISTIC UUIDs
+    CAT_SCHOLARSHIP_ID = "10000000-0000-0000-0000-000000000001"
+    CAT_BUSINESS_ID = "10000000-0000-0000-0000-000000000002"
+    CAT_SUBSIDY_ID = "10000000-0000-0000-0000-000000000003"
+    CAT_GENERAL_ID = "10000000-0000-0000-0000-000000000004"
+
     cat_scholarship = ApplicationCategory(
+        id=CAT_SCHOLARSHIP_ID,
         code="SCH-2026",
         name="Higher Education Academic Scholarship",
         description="Merit and need-based institutional scholarships requiring enrollment proof, transcripts, and declared financial statements.",
@@ -109,6 +122,7 @@ def seed_database(db: Session):
     )
 
     cat_business = ApplicationCategory(
+        id=CAT_BUSINESS_ID,
         code="BIZ-2026",
         name="Municipal Commercial Operating License",
         description="Commercial retail, hospitality, or corporate business operational permit verification.",
@@ -129,6 +143,7 @@ def seed_database(db: Session):
     )
 
     cat_subsidy = ApplicationCategory(
+        id=CAT_SUBSIDY_ID,
         code="SUB-2026",
         name="Clean Energy Infrastructure Subsidy",
         description="Public sector grant for commercial solar, battery storage, or industrial decarbonization deployments.",
@@ -148,6 +163,7 @@ def seed_database(db: Session):
     )
 
     cat_general = ApplicationCategory(
+        id=CAT_GENERAL_ID,
         code="GEN-2026",
         name="Institutional Accreditation & Governance Review",
         description="General multi-document compliance review for certified nonprofit or public service institutions.",

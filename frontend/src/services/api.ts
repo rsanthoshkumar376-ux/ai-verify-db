@@ -16,7 +16,7 @@ import {
 const API_BASE = (import.meta.env.VITE_API_URL ? (import.meta.env.VITE_API_URL as string).replace(/\/$/, '') : '') + '/api/v1';
 
 function getAuthToken(): string | null {
-  return localStorage.getItem('ai_verify_token');
+  return localStorage.getItem('ai_verify_token') || localStorage.getItem('token');
 }
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -139,7 +139,7 @@ export const api = {
     }),
 
   getDocumentDownloadUrl: (documentId: string) => {
-    const token = localStorage.getItem('token') || '';
+    const token = getAuthToken() || '';
     const q = token ? `?token=${encodeURIComponent(token)}` : '';
     return `${API_BASE}/documents/${documentId}/download${q}`;
   },
@@ -198,13 +198,13 @@ export const api = {
     }),
 
   getReportDownloadUrl: (applicationId: string) => {
-    const token = localStorage.getItem('token') || '';
+    const token = getAuthToken() || '';
     const q = token ? `?token=${encodeURIComponent(token)}` : '';
     return `${API_BASE}/reports/${applicationId}/download${q}`;
   },
 
   downloadFile: async (url: string, filename: string): Promise<void> => {
-    const token = localStorage.getItem('token');
+    const token = getAuthToken();
     const headers: Record<string, string> = {};
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;

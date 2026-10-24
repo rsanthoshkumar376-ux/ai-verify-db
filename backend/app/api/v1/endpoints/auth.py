@@ -30,6 +30,7 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
     access_token = create_access_token(
         subject=user.id,
         role=user.role,
+        email=user.email,
         expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     )
 
@@ -95,6 +96,7 @@ def register(request: RegisterRequest, db: Session = Depends(get_db)):
     access_token = create_access_token(
         subject=user.id,
         role=user.role,
+        email=user.email,
         expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     )
 

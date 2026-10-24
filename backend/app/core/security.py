@@ -8,7 +8,12 @@ except ImportError:
 import bcrypt
 from app.core.config import settings
 
-def create_access_token(subject: Union[str, Any], role: str, expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(
+    subject: Union[str, Any],
+    role: str,
+    email: Optional[str] = None,
+    expires_delta: Optional[timedelta] = None
+) -> str:
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
@@ -19,6 +24,8 @@ def create_access_token(subject: Union[str, Any], role: str, expires_delta: Opti
         "sub": str(subject),
         "role": role,
     }
+    if email:
+        to_encode["email"] = email
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 

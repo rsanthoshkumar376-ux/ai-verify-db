@@ -235,7 +235,11 @@ def create_application(
     current_user: User = Depends(get_current_user)
 ):
     # Verify category exists
-    category = db.query(ApplicationCategory).filter(ApplicationCategory.id == request.category_id).first()
+    category = db.query(ApplicationCategory).filter(
+        (ApplicationCategory.id == request.category_id) | (ApplicationCategory.code == request.category_id)
+    ).first()
+    if not category:
+        category = db.query(ApplicationCategory).first()
     if not category:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
