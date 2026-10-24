@@ -36,6 +36,19 @@ def create_report(
         .first()
     )
     if not v_run:
+        try:
+            from app.api.v1.endpoints.applications import execute_verification_pipeline
+            execute_verification_pipeline(application_id, db, current_user.id)
+            v_run = (
+                db.query(VerificationRun)
+                .filter(VerificationRun.application_id == application_id)
+                .order_by(VerificationRun.created_at.desc())
+                .first()
+            )
+        except Exception as exc:
+            print(f"Auto-verification execution note: {exc}")
+
+    if not v_run:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Cannot generate verification report before verification has been performed."
@@ -101,6 +114,19 @@ def download_report(
             .order_by(VerificationRun.created_at.desc())
             .first()
         )
+        if not v_run:
+            try:
+                from app.api.v1.endpoints.applications import execute_verification_pipeline
+                execute_verification_pipeline(application_id, db, current_user.id)
+                v_run = (
+                    db.query(VerificationRun)
+                    .filter(VerificationRun.application_id == application_id)
+                    .order_by(VerificationRun.created_at.desc())
+                    .first()
+                )
+            except Exception as exc:
+                print(f"Auto-verification execution note: {exc}")
+
         if not v_run:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
