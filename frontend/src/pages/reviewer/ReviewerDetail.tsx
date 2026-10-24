@@ -154,23 +154,23 @@ export const ReviewerDetailPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs transition-colors">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/reviewer')}
-            className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-600 cursor-pointer"
+            className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 cursor-pointer"
             aria-label="Back to queue"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
           <div>
             <div className="flex items-center gap-2.5">
-              <span className="font-mono text-lg font-bold text-slate-900">{application.reference_no}</span>
+              <span className="font-mono text-lg font-bold text-slate-900 dark:text-white">{application.reference_no}</span>
               <StatusBadge status={application.status} />
               <RiskBadge risk={application.current_risk_score} />
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Applicant: <span className="font-semibold text-slate-800">{application.applicant_name}</span> ({application.applicant_email}) • {application.category_name}
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Applicant: <span className="font-semibold text-slate-800 dark:text-slate-200">{application.applicant_name}</span> ({application.applicant_email}) • {application.category_name}
             </p>
           </div>
         </div>

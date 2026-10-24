@@ -68,16 +68,16 @@ export const HowItWorksPage: React.FC = () => {
   ];
 
   return (
-    <div className="bg-slate-50 min-h-screen py-16">
+    <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen py-16 transition-colors">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="text-xs font-bold text-indigo-600 uppercase tracking-widest">
+          <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">
             Verification Pipeline
           </span>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-2 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mt-2 tracking-tight">
             How AI Verify Validates Documents & Ensures Compliance
           </h1>
-          <p className="mt-4 text-slate-600 text-base leading-relaxed">
+          <p className="mt-4 text-slate-600 dark:text-slate-300 text-base leading-relaxed">
             Our 7-stage pipeline combines algorithmic verification speed with strict human reviewer oversight, ensuring data accuracy and transparent regulatory compliance.
           </p>
         </div>
@@ -89,23 +89,23 @@ export const HowItWorksPage: React.FC = () => {
             return (
               <div
                 key={idx}
-                className="bg-white p-6 rounded-xl border border-slate-200/90 shadow-2xs flex flex-col md:flex-row items-start md:items-center gap-6"
+                className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-2xs flex flex-col md:flex-row items-start md:items-center gap-6 transition-colors"
               >
                 <div className="flex items-center gap-4 shrink-0">
-                  <span className="text-xl font-mono font-bold text-slate-300">{s.num}</span>
-                  <div className="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center">
+                  <span className="text-xl font-mono font-bold text-slate-300 dark:text-slate-600">{s.num}</span>
+                  <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100 dark:border-indigo-900 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
                     <Icon className="w-6 h-6" />
                   </div>
                 </div>
 
                 <div className="flex-1">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
-                    <h3 className="font-bold text-slate-900 text-base">{s.title}</h3>
-                    <span className="text-[11px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                    <h3 className="font-bold text-slate-900 dark:text-white text-base">{s.title}</h3>
+                    <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
                       {s.tech}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-600 leading-relaxed">{s.desc}</p>
+                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{s.desc}</p>
                 </div>
               </div>
             );
@@ -113,8 +113,8 @@ export const HowItWorksPage: React.FC = () => {
         </div>
 
         {/* Compliance Note */}
-        <div id="compliance" className="mt-16 bg-blue-50/70 border border-blue-200 rounded-xl p-6 text-xs text-blue-900 leading-relaxed flex items-start gap-3">
-          <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+        <div id="compliance" className="mt-16 bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900 rounded-xl p-6 text-xs text-blue-900 dark:text-blue-200 leading-relaxed flex items-start gap-3">
+          <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
           <div>
             <h4 className="font-bold text-sm mb-1">Regulatory Standards & Legal Boundaries</h4>
             <p>

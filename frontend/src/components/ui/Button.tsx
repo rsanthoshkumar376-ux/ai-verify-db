@@ -27,18 +27,18 @@ export const Button: React.FC<ButtonProps> = ({
   };
 
   const variantStyles = {
-    primary: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm disabled:bg-indigo-300',
-    secondary: 'bg-slate-800 hover:bg-slate-900 text-white shadow-sm disabled:bg-slate-400',
-    outline: 'border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 shadow-sm disabled:bg-slate-50 disabled:text-slate-400',
+    primary: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm disabled:bg-indigo-300 dark:disabled:bg-indigo-900/50',
+    secondary: 'bg-slate-850 hover:bg-slate-900 dark:bg-slate-800 dark:hover:bg-slate-700 text-white shadow-sm disabled:bg-slate-400',
+    outline: 'border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm disabled:bg-slate-50 dark:disabled:bg-slate-900 disabled:text-slate-400',
     danger: 'bg-rose-600 hover:bg-rose-700 text-white shadow-sm disabled:bg-rose-300',
-    ghost: 'hover:bg-slate-100 text-slate-700 disabled:text-slate-400',
-    link: 'text-indigo-600 hover:underline p-0 h-auto font-medium',
+    ghost: 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 disabled:text-slate-400',
+    link: 'text-indigo-600 dark:text-indigo-400 hover:underline p-0 h-auto font-medium',
   };
 
   return (
     <button
       disabled={disabled || isLoading}
-      className={`inline-flex items-center justify-center gap-2 rounded-lg transition-colors cursor-pointer disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:ring-offset-1 ${sizeStyles[size]} ${variantStyles[variant]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-lg transition-colors cursor-pointer disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:ring-offset-1 dark:focus:ring-offset-slate-900 ${sizeStyles[size]} ${variantStyles[variant]} ${className}`}
       {...props}
     >
       {isLoading ? (

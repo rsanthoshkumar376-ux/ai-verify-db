@@ -106,18 +106,18 @@ export const ApplicationDetailPage: React.FC = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate(-1)}
-            className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-600 cursor-pointer"
+            className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 cursor-pointer"
             aria-label="Back"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
           <div>
             <div className="flex items-center gap-2.5">
-              <span className="font-mono text-lg font-bold text-slate-900">{application.reference_no}</span>
+              <span className="font-mono text-lg font-bold text-slate-900 dark:text-white">{application.reference_no}</span>
               <StatusBadge status={application.status} />
               <RiskBadge risk={application.current_risk_score} />
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">{application.title} • {application.category_name}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{application.title} • {application.category_name}</p>
           </div>
         </div>
 
@@ -159,13 +159,13 @@ export const ApplicationDetailPage: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-slate-200 text-xs font-semibold gap-6">
+      <div className="flex border-b border-slate-200 dark:border-slate-800 text-xs font-semibold gap-6">
         <button
           onClick={() => setActiveTab('overview')}
           className={`pb-3 border-b-2 cursor-pointer transition-colors ${
             activeTab === 'overview'
-              ? 'border-indigo-600 text-indigo-600'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400'
+              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
           }`}
         >
           Overview & Documents
@@ -174,8 +174,8 @@ export const ApplicationDetailPage: React.FC = () => {
           onClick={() => setActiveTab('extraction')}
           className={`pb-3 border-b-2 cursor-pointer transition-colors ${
             activeTab === 'extraction'
-              ? 'border-indigo-600 text-indigo-600'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400'
+              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
           }`}
         >
           AI Field Extraction ({latestRun?.extracted_fields?.length || 0})
@@ -184,8 +184,8 @@ export const ApplicationDetailPage: React.FC = () => {
           onClick={() => setActiveTab('tamper')}
           className={`pb-3 border-b-2 cursor-pointer transition-colors ${
             activeTab === 'tamper'
-              ? 'border-indigo-600 text-indigo-600'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400'
+              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
           }`}
         >
           Tamper Indicators ({latestRun?.findings?.length || 0})
@@ -194,8 +194,8 @@ export const ApplicationDetailPage: React.FC = () => {
           onClick={() => setActiveTab('compliance')}
           className={`pb-3 border-b-2 cursor-pointer transition-colors ${
             activeTab === 'compliance'
-              ? 'border-indigo-600 text-indigo-600'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400'
+              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
           }`}
         >
           Compliance Rules ({latestRun?.compliance_evaluations?.length || 0})
@@ -204,8 +204,8 @@ export const ApplicationDetailPage: React.FC = () => {
           onClick={() => setActiveTab('history')}
           className={`pb-3 border-b-2 cursor-pointer transition-colors ${
             activeTab === 'history'
-              ? 'border-indigo-600 text-indigo-600'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400'
+              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
           }`}
         >
           Audit Timeline ({application.status_history?.length || 0})

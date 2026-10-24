@@ -101,18 +101,18 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-slate-200 bg-white px-4 pt-2 pb-6 space-y-3">
+        <div className="md:hidden border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 pt-2 pb-6 space-y-3">
           {navLinks.map((link) => (
             <Link
               key={link.path}
               to={link.path}
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-base font-medium text-slate-700 hover:text-indigo-600"
+              className="block py-2 text-base font-medium text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400"
             >
               {link.label}
             </Link>
           ))}
-          <div className="pt-4 border-t border-slate-100 flex flex-col gap-2">
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2">
             {user ? (
               <Link to={getDashboardPath()} onClick={() => setMobileMenuOpen(false)}>
                 <Button variant="primary" className="w-full">

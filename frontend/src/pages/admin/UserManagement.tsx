@@ -1,22 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Search, Shield, UserCheck, Ban, CheckCircle2 } from 'lucide-react';
+import { Users, Search, Shield, UserCheck, UserX, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { api } from '../../services/api';
 import { User, UserRole } from '../../types';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { Modal } from '../../components/ui/Modal';
-import { useToast } from '../../context/ToastContext';
 import { TableSkeleton } from '../../components/common/LoadingSkeleton';
+import { useToast } from '../../context/ToastContext';
 
-export const UserManagementPage: React.FC = () => {
-  const { success, error, warning } = useToast();
+export const UserManagement: React.FC = () => {
+  const { success, error } = useToast();
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [roleFilter, setRoleFilter] = useState('');
   const [search, setSearch] = useState('');
-
-  // Role Edit Modal
+  const [roleFilter, setRoleFilter] = useState('');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [newRole, setNewRole] = useState<UserRole>('APPLICANT');
   const [isUpdatingRole, setIsUpdatingRole] = useState(false);
@@ -43,7 +41,7 @@ export const UserManagementPage: React.FC = () => {
     setIsUpdatingRole(true);
     try {
       await api.updateUserRole(selectedUser.id, newRole);
-      success(`Updated ${selectedUser.full_name}'s role to ${newRole}.`);
+      success(`Role updated successfully for ${selectedUser.full_name}.`);
       setSelectedUser(null);
       await fetchUsers();
     } catch (err: any) {
@@ -76,13 +74,13 @@ export const UserManagementPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors">
         <div>
-          <span className="text-xs font-bold text-indigo-600 uppercase tracking-widest">
+          <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">
             Identity & Authorization
           </span>
-          <h1 className="text-2xl font-bold text-slate-900 mt-1">User & Role Management</h1>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">User & Role Management</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Administer institutional user accounts, role-based privileges, and authorization statuses.
           </p>
         </div>
@@ -92,7 +90,7 @@ export const UserManagementPage: React.FC = () => {
         <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <CardTitle>Registered Platform Users ({filteredUsers.length})</CardTitle>
-            <p className="text-xs text-slate-500 mt-0.5">Role-based access control directory</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Role-based access control directory</p>
           </div>
 
           <div className="flex items-center gap-2">
@@ -103,14 +101,14 @@ export const UserManagementPage: React.FC = () => {
                 placeholder="Search name or email..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 w-48 sm:w-56"
+                className="pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 w-48 sm:w-56"
               />
             </div>
 
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-white text-slate-700"
+              className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200"
             >
               <option value="">All Roles</option>
               <option value="APPLICANT">Applicants</option>
@@ -127,7 +125,7 @@ export const UserManagementPage: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-slate-50/80 border-b border-slate-200/80 text-slate-500 font-semibold uppercase text-[11px]">
+                  <tr className="bg-slate-50/80 dark:bg-slate-800/60 border-b border-slate-200/80 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold uppercase text-[11px]">
                     <th className="py-3 px-5">User</th>
                     <th className="py-3 px-4">Affiliation / Org</th>
                     <th className="py-3 px-4">Current Role</th>
@@ -136,14 +134,14 @@ export const UserManagementPage: React.FC = () => {
                     <th className="py-3 px-5 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {filteredUsers.map((u) => (
-                    <tr key={u.id} className="hover:bg-slate-50/60 transition-colors">
+                    <tr key={u.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
                       <td className="py-3.5 px-5">
-                        <div className="font-semibold text-slate-900">{u.full_name}</div>
-                        <div className="text-[11px] text-slate-500 font-mono">{u.email}</div>
+                        <div className="font-semibold text-slate-900 dark:text-white">{u.full_name}</div>
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">{u.email}</div>
                       </td>
-                      <td className="py-3.5 px-4 text-slate-600">{u.organization || 'Independent'}</td>
+                      <td className="py-3.5 px-4 text-slate-600 dark:text-slate-300">{u.organization || 'Independent'}</td>
                       <td className="py-3.5 px-4">
                         <Badge
                           variant={
@@ -158,7 +156,7 @@ export const UserManagementPage: React.FC = () => {
                           {u.is_active ? 'Active' : 'Deactivated'}
                         </Badge>
                       </td>
-                      <td className="py-3.5 px-4 text-slate-500">
+                      <td className="py-3.5 px-4 text-slate-500 dark:text-slate-400">
                         {new Date(u.created_at).toLocaleDateString()}
                       </td>
                       <td className="py-3.5 px-5 text-right whitespace-nowrap space-x-2">
@@ -175,7 +173,7 @@ export const UserManagementPage: React.FC = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className={u.is_active ? 'text-rose-600 hover:bg-rose-50' : 'text-emerald-600 hover:bg-emerald-50'}
+                          className={u.is_active ? 'text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30' : 'text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30'}
                           onClick={() => handleToggleStatus(u)}
                         >
                           {u.is_active ? 'Deactivate' : 'Activate'}
@@ -199,11 +197,11 @@ export const UserManagementPage: React.FC = () => {
       >
         <form onSubmit={handleRoleUpdate} className="space-y-4 text-xs">
           <div>
-            <label className="block font-semibold text-slate-700 mb-1">Select Role</label>
+            <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Select Role</label>
             <select
               value={newRole}
               onChange={(e: any) => setNewRole(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 bg-white"
+              className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
             >
               <option value="APPLICANT">APPLICANT — Restricted to personal submissions & drafts</option>
               <option value="REVIEWER">REVIEWER — Authorized to inspect queue & record determinations</option>
@@ -224,3 +222,6 @@ export const UserManagementPage: React.FC = () => {
     </div>
   );
 };
+
+export const UserManagementPage = UserManagement;
+

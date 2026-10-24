@@ -4,17 +4,16 @@ import {
   CheckSquare,
   Search,
   Filter,
-  AlertTriangle,
-  Clock,
   CheckCircle2,
+  Clock,
+  AlertTriangle,
   ArrowRight,
-  ShieldAlert,
+  ShieldCheck,
   UserCheck,
   Download,
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { ApplicationListItem } from '../../types';
-import { useAuth } from '../../context/AuthContext';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { StatusBadge, RiskBadge } from '../../components/ui/Badge';
@@ -22,7 +21,6 @@ import { TableSkeleton } from '../../components/common/LoadingSkeleton';
 import { EmptyState } from '../../components/common/EmptyState';
 
 export const ReviewerDashboard: React.FC = () => {
-  const { user } = useAuth();
   const [applications, setApplications] = useState<ApplicationListItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -58,10 +56,14 @@ export const ReviewerDashboard: React.FC = () => {
     return true;
   });
 
-  const pendingReview = applications.filter((a) => a.status === 'UNDER_HUMAN_REVIEW' || a.status === 'SUBMITTED').length;
-  const highPriority = applications.filter((a) => a.current_risk_score === 'HIGH').length;
-  const verifiedCount = applications.filter((a) => a.status === 'VERIFIED').length;
+  const pendingReview = applications.filter(
+    (a) => a.status === 'UNDER_HUMAN_REVIEW' || a.status === 'SUBMITTED'
+  ).length;
+  const highPriority = applications.filter(
+    (a) => a.current_risk_score === 'HIGH'
+  ).length;
   const needsInfoCount = applications.filter((a) => a.status === 'NEEDS_INFORMATION').length;
+  const verifiedCount = applications.filter((a) => a.status === 'VERIFIED').length;
 
   const handleExportCSV = () => {
     if (applications.length === 0) return;
@@ -87,15 +89,15 @@ export const ReviewerDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Reviewer Header */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors">
         <div>
-          <span className="text-xs font-bold text-indigo-600 uppercase tracking-widest">
+          <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">
             Compliance Reviewer Workspace
           </span>
-          <h1 className="text-2xl font-bold text-slate-900 mt-1">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
             Application Verification Queue
           </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Conduct side-by-side document extractions, evaluate preliminary AI findings, and record reasoned determinations.
           </p>
         </div>
@@ -112,40 +114,40 @@ export const ReviewerDashboard: React.FC = () => {
 
       {/* Review Metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-2xs">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-2xs transition-colors">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Awaiting Human Review</span>
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Awaiting Human Review</span>
             <Clock className="w-4 h-4 text-blue-500" />
           </div>
-          <p className="text-2xl font-bold text-blue-600 mt-2">{pendingReview}</p>
-          <span className="text-[11px] text-slate-400">Requires reviewer sign-off</span>
+          <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-2">{pendingReview}</p>
+          <span className="text-[11px] text-slate-400 dark:text-slate-500">Requires reviewer sign-off</span>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-2xs">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-2xs transition-colors">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">High Risk Flags</span>
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">High Risk Flags</span>
             <AlertTriangle className="w-4 h-4 text-rose-500" />
           </div>
-          <p className="text-2xl font-bold text-rose-600 mt-2">{highPriority}</p>
-          <span className="text-[11px] text-slate-400">Field mismatch or tamper indicator</span>
+          <p className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-2">{highPriority}</p>
+          <span className="text-[11px] text-slate-400 dark:text-slate-500">Field mismatch or tamper indicator</span>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-2xs">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-2xs transition-colors">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Needs Information</span>
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Needs Information</span>
             <Clock className="w-4 h-4 text-amber-500" />
           </div>
-          <p className="text-2xl font-bold text-amber-600 mt-2">{needsInfoCount}</p>
-          <span className="text-[11px] text-slate-400">Waiting on applicant upload</span>
+          <p className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-2">{needsInfoCount}</p>
+          <span className="text-[11px] text-slate-400 dark:text-slate-500">Waiting on applicant upload</span>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-2xs">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-2xs transition-colors">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Verified Completed</span>
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Verified Completed</span>
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />
           </div>
-          <p className="text-2xl font-bold text-emerald-600 mt-2">{verifiedCount}</p>
-          <span className="text-[11px] text-slate-400">Approved by reviewer</span>
+          <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">{verifiedCount}</p>
+          <span className="text-[11px] text-slate-400 dark:text-slate-500">Approved by reviewer</span>
         </div>
       </div>
 
@@ -154,7 +156,7 @@ export const ReviewerDashboard: React.FC = () => {
         <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <CardTitle>Active Application Queue</CardTitle>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Inspect submitted dossiers and rule evaluations
             </p>
           </div>
@@ -167,14 +169,14 @@ export const ReviewerDashboard: React.FC = () => {
                 placeholder="Search reference or applicant..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 w-48 sm:w-56"
+                className="pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 w-48 sm:w-56"
               />
             </form>
 
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-white text-slate-700"
+              className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200"
             >
               <option value="">All Statuses</option>
               <option value="UNDER_HUMAN_REVIEW">Under Review</option>
@@ -187,7 +189,7 @@ export const ReviewerDashboard: React.FC = () => {
             <select
               value={riskFilter}
               onChange={(e) => setRiskFilter(e.target.value)}
-              className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-white text-slate-700"
+              className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200"
             >
               <option value="">All Risk Tiers</option>
               <option value="HIGH">High Risk</option>
@@ -209,7 +211,7 @@ export const ReviewerDashboard: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-slate-50/80 border-b border-slate-200/80 text-slate-500 font-semibold uppercase text-[11px]">
+                  <tr className="bg-slate-50/80 dark:bg-slate-800/60 border-b border-slate-200/80 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold uppercase text-[11px]">
                     <th className="py-3 px-5">Reference</th>
                     <th className="py-3 px-4">Applicant & Title</th>
                     <th className="py-3 px-4">Category</th>
@@ -219,24 +221,24 @@ export const ReviewerDashboard: React.FC = () => {
                     <th className="py-3 px-5 text-right">Review Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {filteredApps.map((app) => (
-                    <tr key={app.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="py-3.5 px-5 font-mono font-bold text-slate-900">
+                    <tr key={app.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                      <td className="py-3.5 px-5 font-mono font-bold text-slate-900 dark:text-white">
                         {app.reference_no}
                       </td>
                       <td className="py-3.5 px-4 max-w-xs">
-                        <div className="font-semibold text-slate-900">{app.applicant_name}</div>
-                        <div className="text-[11px] text-slate-500 truncate">{app.title}</div>
+                        <div className="font-semibold text-slate-900 dark:text-white">{app.applicant_name}</div>
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{app.title}</div>
                       </td>
-                      <td className="py-3.5 px-4 text-slate-600">{app.category_name}</td>
+                      <td className="py-3.5 px-4 text-slate-600 dark:text-slate-300">{app.category_name}</td>
                       <td className="py-3.5 px-4">
                         <StatusBadge status={app.status} />
                       </td>
                       <td className="py-3.5 px-4">
                         <RiskBadge risk={app.current_risk_score} />
                       </td>
-                      <td className="py-3.5 px-4 text-slate-600">
+                      <td className="py-3.5 px-4 text-slate-600 dark:text-slate-300">
                         {app.assigned_reviewer_name || (
                           <span className="text-slate-400 italic">Unassigned</span>
                         )}

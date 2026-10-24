@@ -113,13 +113,13 @@ export const RuleManagementPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors">
         <div>
-          <span className="text-xs font-bold text-indigo-600 uppercase tracking-widest">
+          <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">
             Policy Architecture
           </span>
-          <h1 className="text-2xl font-bold text-slate-900 mt-1">Regulatory Compliance Rules Engine</h1>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">Regulatory Compliance Rules Engine</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Configure, version, and activate deterministic regulatory validation checks across application categories.
           </p>
         </div>
@@ -133,8 +133,8 @@ export const RuleManagementPage: React.FC = () => {
         </Button>
       </div>
 
-      <div className="p-4 bg-amber-50/70 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-start gap-2.5">
-        <Info className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+      <div className="p-4 bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-xl text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2.5">
+        <Info className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
         <div>
           <span className="font-bold">Demonstration Policy Notice:</span> Sample compliance rules are labeled "Demonstration Rule — Not Legal Advice". Rule formulations must be reviewed and certified by qualified sector compliance counsel prior to legal reliance.
         </div>
@@ -261,7 +261,7 @@ export const RuleManagementPage: React.FC = () => {
               placeholder="Search code, title, or jurisdiction..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 w-56 sm:w-64"
+              className="pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 w-56 sm:w-64"
             />
           </div>
         </CardHeader>
@@ -273,7 +273,7 @@ export const RuleManagementPage: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-slate-50/80 border-b border-slate-200/80 text-slate-500 font-semibold uppercase text-[11px]">
+                  <tr className="bg-slate-50/80 dark:bg-slate-800/60 border-b border-slate-200/80 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold uppercase text-[11px]">
                     <th className="py-3 px-5">Rule Code</th>
                     <th className="py-3 px-4">Rule Name & Description</th>
                     <th className="py-3 px-4">Jurisdiction & Scope</th>
@@ -283,24 +283,24 @@ export const RuleManagementPage: React.FC = () => {
                     <th className="py-3 px-5 text-right">Toggle</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {filteredRules.map((rule) => (
-                    <tr key={rule.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="py-3.5 px-5 font-mono font-bold text-slate-900">
+                    <tr key={rule.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                      <td className="py-3.5 px-5 font-mono font-bold text-slate-900 dark:text-white">
                         {rule.rule_code}
                       </td>
                       <td className="py-3.5 px-4 max-w-sm">
-                        <div className="font-semibold text-slate-900">{rule.name}</div>
-                        <div className="text-[11px] text-slate-500 leading-relaxed mt-0.5">{rule.description}</div>
+                        <div className="font-semibold text-slate-900 dark:text-white">{rule.name}</div>
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mt-0.5">{rule.description}</div>
                         {rule.is_demo_rule && (
-                          <span className="text-[10px] text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200 mt-1 inline-block">
+                          <span className="text-[10px] text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.2 rounded border border-amber-200 dark:border-amber-800 mt-1 inline-block">
                             Demo Rule — Not Legal Advice
                           </span>
                         )}
                       </td>
                       <td className="py-3.5 px-4">
-                        <span className="font-semibold text-slate-800">{rule.jurisdiction}</span>
-                        <div className="text-[11px] text-slate-500">Category: {rule.application_category}</div>
+                        <span className="font-semibold text-slate-800 dark:text-slate-200">{rule.jurisdiction}</span>
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400">Category: {rule.application_category}</div>
                       </td>
                       <td className="py-3.5 px-4">
                         <Badge
@@ -315,7 +315,7 @@ export const RuleManagementPage: React.FC = () => {
                           {rule.severity}
                         </Badge>
                       </td>
-                      <td className="py-3.5 px-4 font-mono text-slate-600">v{rule.version}</td>
+                      <td className="py-3.5 px-4 font-mono text-slate-600 dark:text-slate-400">v{rule.version}</td>
                       <td className="py-3.5 px-4">
                         <Badge variant={rule.is_enabled ? 'success' : 'neutral'}>
                           {rule.is_enabled ? 'Active' : 'Disabled'}

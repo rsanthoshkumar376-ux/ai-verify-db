@@ -77,7 +77,7 @@ export const DashboardLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors">
       <DemoBanner />
 
       <div className="flex flex-1">
@@ -102,16 +102,16 @@ export const DashboardLayout: React.FC = () => {
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col min-w-0">
           {/* Topbar */}
-          <header className="h-16 bg-white border-b border-slate-200/80 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30">
+          <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 transition-colors">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setMobileSidebarOpen(true)}
-                className="lg:hidden p-2 text-slate-500 hover:text-slate-800"
+                className="lg:hidden p-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
                 aria-label="Open menu"
               >
                 <Menu className="w-5 h-5" />
               </button>
-              <h2 className="text-base font-semibold text-slate-900 hidden sm:block">
+              <h2 className="text-base font-semibold text-slate-900 dark:text-white hidden sm:block">
                 Enterprise Verification Platform
               </h2>
             </div>
@@ -122,7 +122,7 @@ export const DashboardLayout: React.FC = () => {
               <div className="relative">
                 <button
                   onClick={() => setNotifOpen(!notifOpen)}
-                  className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg relative cursor-pointer"
+                  className="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg relative cursor-pointer"
                   aria-label="Notifications"
                 >
                   <Bell className="w-5 h-5" />
@@ -134,22 +134,22 @@ export const DashboardLayout: React.FC = () => {
                 </button>
 
                 {notifOpen && (
-                  <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-xl shadow-xl border border-slate-200 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-                    <div className="p-3.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/60">
-                      <span className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
+                  <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+                    <div className="p-3.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/60 dark:bg-slate-800/40">
+                      <span className="text-xs font-semibold text-slate-900 dark:text-white uppercase tracking-wider">
                         Notifications ({notifications.length})
                       </span>
                       {unreadCount > 0 && (
                         <button
                           onClick={handleMarkAllRead}
-                          className="text-xs text-indigo-600 hover:underline cursor-pointer font-medium"
+                          className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer font-medium"
                         >
                           Mark all as read
                         </button>
                       )}
                     </div>
 
-                    <div className="max-h-72 overflow-y-auto divide-y divide-slate-100">
+                    <div className="max-h-72 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800">
                       {notifications.length === 0 ? (
                         <div className="p-6 text-center text-xs text-slate-400">
                           No notifications at this time.
@@ -159,21 +159,21 @@ export const DashboardLayout: React.FC = () => {
                           <div
                             key={n.id}
                             onClick={() => handleNotificationClick(n)}
-                            className={`p-3 text-left hover:bg-slate-50 cursor-pointer transition-colors ${
-                              !n.is_read ? 'bg-indigo-50/40' : ''
+                            className={`p-3 text-left hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer transition-colors ${
+                              !n.is_read ? 'bg-indigo-50/40 dark:bg-indigo-950/30' : ''
                             }`}
                           >
                             <div className="flex items-start gap-2.5">
-                              {n.type === 'SUCCESS' && <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />}
-                              {n.type === 'WARNING' && <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />}
-                              {n.type === 'ERROR' && <AlertCircle className="w-4 h-4 text-rose-600 mt-0.5 shrink-0" />}
-                              {n.type === 'INFO' && <Shield className="w-4 h-4 text-indigo-600 mt-0.5 shrink-0" />}
+                              {n.type === 'SUCCESS' && <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />}
+                              {n.type === 'WARNING' && <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />}
+                              {n.type === 'ERROR' && <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 mt-0.5 shrink-0" />}
+                              {n.type === 'INFO' && <Shield className="w-4 h-4 text-indigo-600 dark:text-indigo-400 mt-0.5 shrink-0" />}
 
                               <div className="flex-1 min-w-0">
-                                <p className={`text-xs ${!n.is_read ? 'font-semibold text-slate-900' : 'text-slate-700'}`}>
+                                <p className={`text-xs ${!n.is_read ? 'font-semibold text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-300'}`}>
                                   {n.title}
                                 </p>
-                                <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-2 leading-relaxed">
+                                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2 leading-relaxed">
                                   {n.message}
                                 </p>
                               </div>
@@ -190,27 +190,27 @@ export const DashboardLayout: React.FC = () => {
               <div className="relative">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-slate-100 cursor-pointer"
+                  className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
                 >
-                  <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-xs">
+                  <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 font-bold flex items-center justify-center text-xs">
                     {user?.full_name?.charAt(0) || 'U'}
                   </div>
                   <div className="text-left hidden md:block">
-                    <p className="text-xs font-semibold text-slate-900">{user?.full_name}</p>
-                    <p className="text-[10px] text-slate-500 capitalize">{user?.role?.toLowerCase()}</p>
+                    <p className="text-xs font-semibold text-slate-900 dark:text-white">{user?.full_name}</p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 capitalize">{user?.role?.toLowerCase()}</p>
                   </div>
                   <ChevronDown className="w-4 h-4 text-slate-400" />
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-200 py-1 z-50">
-                    <div className="px-4 py-2 border-b border-slate-100 text-xs">
-                      <p className="font-semibold text-slate-900">{user?.full_name}</p>
-                      <p className="text-slate-500 truncate">{user?.email}</p>
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 py-1 z-50">
+                    <div className="px-4 py-2 border-b border-slate-100 dark:border-slate-800 text-xs">
+                      <p className="font-semibold text-slate-900 dark:text-white">{user?.full_name}</p>
+                      <p className="text-slate-500 dark:text-slate-400 truncate">{user?.email}</p>
                     </div>
                     <button
                       onClick={handleLogout}
-                      className="w-full px-4 py-2 text-left text-xs text-rose-600 hover:bg-rose-50 flex items-center gap-2 cursor-pointer font-medium"
+                      className="w-full px-4 py-2 text-left text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center gap-2 cursor-pointer font-medium"
                     >
                       <LogOut className="w-4 h-4" />
                       Sign Out

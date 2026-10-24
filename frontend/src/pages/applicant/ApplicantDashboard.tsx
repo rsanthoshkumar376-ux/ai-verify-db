@@ -61,15 +61,15 @@ export const ApplicantDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors">
         <div>
-          <span className="text-xs font-bold text-indigo-600 uppercase tracking-widest">
+          <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">
             Applicant Portal
           </span>
-          <h1 className="text-2xl font-bold text-slate-900 mt-1">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
             Welcome, {user?.full_name}
           </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Monitor verification status, respond to reviewer inquiries, or start a new application.
           </p>
         </div>
@@ -82,40 +82,40 @@ export const ApplicantDashboard: React.FC = () => {
 
       {/* Metric Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-2xs">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-2xs transition-colors">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Total Submissions</span>
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Total Submissions</span>
             <FileText className="w-4 h-4 text-slate-400" />
           </div>
-          <p className="text-2xl font-bold text-slate-900 mt-2">{totalApps}</p>
-          <span className="text-[11px] text-slate-400">All registered dossiers</span>
+          <p className="text-2xl font-bold text-slate-900 dark:text-white mt-2">{totalApps}</p>
+          <span className="text-[11px] text-slate-400 dark:text-slate-500">All registered dossiers</span>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-2xs">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-2xs transition-colors">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">In Verification</span>
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">In Verification</span>
             <Clock className="w-4 h-4 text-blue-500" />
           </div>
-          <p className="text-2xl font-bold text-blue-600 mt-2">{submittedApps}</p>
-          <span className="text-[11px] text-slate-400">Processing or under review</span>
+          <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-2">{submittedApps}</p>
+          <span className="text-[11px] text-slate-400 dark:text-slate-500">Processing or under review</span>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-2xs">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-2xs transition-colors">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Needs Information</span>
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Needs Information</span>
             <AlertCircle className="w-4 h-4 text-amber-500" />
           </div>
-          <p className="text-2xl font-bold text-amber-600 mt-2">{needsInfoApps}</p>
-          <span className="text-[11px] text-slate-400">Action required by applicant</span>
+          <p className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-2">{needsInfoApps}</p>
+          <span className="text-[11px] text-slate-400 dark:text-slate-500">Action required by applicant</span>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-2xs">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-2xs transition-colors">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Verified & Approved</span>
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Verified & Approved</span>
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />
           </div>
-          <p className="text-2xl font-bold text-emerald-600 mt-2">{verifiedApps}</p>
-          <span className="text-[11px] text-slate-400">Verification complete</span>
+          <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">{verifiedApps}</p>
+          <span className="text-[11px] text-slate-400 dark:text-slate-500">Verification complete</span>
         </div>
       </div>
 
@@ -124,7 +124,7 @@ export const ApplicantDashboard: React.FC = () => {
         <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <CardTitle>My Applications</CardTitle>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Review current progress, risk ratings, and attached supporting records
             </p>
           </div>
@@ -138,14 +138,14 @@ export const ApplicantDashboard: React.FC = () => {
                 placeholder="Search reference or title..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 w-48 sm:w-56"
+                className="pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 w-48 sm:w-56"
               />
             </form>
 
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
             >
               <option value="">All Statuses</option>
               <option value="DRAFT">Draft</option>
@@ -173,7 +173,7 @@ export const ApplicantDashboard: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-slate-50/80 border-b border-slate-200/80 text-slate-500 font-semibold uppercase tracking-wider text-[11px]">
+                  <tr className="bg-slate-50/80 dark:bg-slate-800/60 border-b border-slate-200/80 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider text-[11px]">
                     <th className="py-3 px-5">Application Reference</th>
                     <th className="py-3 px-4">Title & Category</th>
                     <th className="py-3 px-4">Submitted / Updated</th>
@@ -182,17 +182,17 @@ export const ApplicantDashboard: React.FC = () => {
                     <th className="py-3 px-5 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {applications.map((app) => (
-                    <tr key={app.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="py-3.5 px-5 font-mono font-semibold text-slate-900">
+                    <tr key={app.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                      <td className="py-3.5 px-5 font-mono font-semibold text-slate-900 dark:text-white">
                         {app.reference_no}
                       </td>
                       <td className="py-3.5 px-4 max-w-xs">
-                        <div className="font-medium text-slate-900 truncate">{app.title}</div>
-                        <div className="text-[11px] text-slate-500">{app.category_name}</div>
+                        <div className="font-medium text-slate-900 dark:text-white truncate">{app.title}</div>
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400">{app.category_name}</div>
                       </td>
-                      <td className="py-3.5 px-4 text-slate-500 whitespace-nowrap">
+                      <td className="py-3.5 px-4 text-slate-500 dark:text-slate-400 whitespace-nowrap">
                         {new Date(app.updated_at).toLocaleDateString(undefined, {
                           year: 'numeric',
                           month: 'short',
