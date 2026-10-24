@@ -10,6 +10,17 @@ from app.core.config import settings
 from app.models.application import Application
 from app.models.verification import VerificationRun
 
+def _format_datetime(dt_val) -> str:
+    if not dt_val:
+        return "N/A"
+    if isinstance(dt_val, datetime):
+        return dt_val.strftime('%Y-%m-%d %H:%M UTC')
+    try:
+        dt = datetime.fromisoformat(str(dt_val).replace('Z', '+00:00'))
+        return dt.strftime('%Y-%m-%d %H:%M UTC')
+    except Exception:
+        return str(dt_val)[:19]
+
 def generate_pdf_report(
     application: Application,
     verification_run: VerificationRun,
@@ -120,10 +131,11 @@ def generate_pdf_report(
 
     # 2. Application Summary Table
     elements.append(Paragraph("Application & Submission Details", section_heading))
+    applicant_label = application.applicant.full_name if application.applicant else "N/A"
     app_info = [
-        [Paragraph("<b>Application Title:</b>", normal_text), Paragraph(application.title, normal_text), Paragraph("<b>Current Status:</b>", normal_text), Paragraph(f"<b>{application.status}</b>", normal_text)],
+        [Paragraph("<b>Application Title:</b>", normal_text), Paragraph(application.title or "Compliance Application", normal_text), Paragraph("<b>Current Status:</b>", normal_text), Paragraph(f"<b>{application.status}</b>", normal_text)],
         [Paragraph("<b>Category:</b>", normal_text), Paragraph(application.category.name if application.category else "General", normal_text), Paragraph("<b>Risk Tier:</b>", normal_text), Paragraph(f"<b>{application.current_risk_score}</b>", normal_text)],
-        [Paragraph("<b>Applicant ID:</b>", normal_text), Paragraph(application.applicant.full_name if application.applicant else "N/A", normal_text), Paragraph("<b>Submission Date:</b>", normal_text), Paragraph(application.created_at.strftime('%Y-%m-%d %H:%M UTC'), normal_text)],
+        [Paragraph("<b>Applicant ID:</b>", normal_text), Paragraph(applicant_label, normal_text), Paragraph("<b>Submission Date:</b>", normal_text), Paragraph(_format_datetime(application.created_at), normal_text)],
     ]
     t_app = Table(app_info, colWidths=[110, 160, 110, 160])
     t_app.setStyle(TableStyle([
@@ -196,10 +208,11 @@ def generate_pdf_report(
     if application.review_decisions:
         elements.append(Paragraph("Authorized Compliance Review Decision", section_heading))
         dec = application.review_decisions[-1]
+        reviewer_label = dec.reviewer.full_name if dec.reviewer else "Compliance Officer"
         dec_info = [
-            [Paragraph("<b>Decision:</b>", normal_text), Paragraph(f"<b>{dec.decision}</b>", normal_text), Paragraph("<b>Recorded At:</b>", normal_text), Paragraph(dec.created_at.strftime('%Y-%m-%d %H:%M UTC'), normal_text)],
-            [Paragraph("<b>Reason:</b>", normal_text), Paragraph(dec.reason, normal_text), Paragraph("<b>Reviewer:</b>", normal_text), Paragraph(dec.reviewer.full_name if dec.reviewer else "Compliance Officer", normal_text)],
-            [Paragraph("<b>Detailed Notes:</b>", normal_text), Paragraph(dec.explanation, normal_text), "", ""]
+            [Paragraph("<b>Decision:</b>", normal_text), Paragraph(f"<b>{dec.decision}</b>", normal_text), Paragraph("<b>Recorded At:</b>", normal_text), Paragraph(_format_datetime(dec.created_at), normal_text)],
+            [Paragraph("<b>Reason:</b>", normal_text), Paragraph(dec.reason or "—", normal_text), Paragraph("<b>Reviewer:</b>", normal_text), Paragraph(reviewer_label, normal_text)],
+            [Paragraph("<b>Detailed Notes:</b>", normal_text), Paragraph(dec.explanation or "—", normal_text), "", ""]
         ]
         t_dec = Table(dec_info, colWidths=[100, 170, 100, 170])
         t_dec.setStyle(TableStyle([

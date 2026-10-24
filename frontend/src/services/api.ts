@@ -138,7 +138,11 @@ export const api = {
       method: 'POST',
     }),
 
-  getDocumentDownloadUrl: (documentId: string) => `${API_BASE}/documents/${documentId}/download`,
+  getDocumentDownloadUrl: (documentId: string) => {
+    const token = localStorage.getItem('token') || '';
+    const q = token ? `?token=${encodeURIComponent(token)}` : '';
+    return `${API_BASE}/documents/${documentId}/download${q}`;
+  },
 
   // Verification
   runVerification: (applicationId: string) =>
@@ -193,7 +197,39 @@ export const api = {
       method: 'POST',
     }),
 
-  getReportDownloadUrl: (applicationId: string) => `${API_BASE}/reports/${applicationId}/download`,
+  getReportDownloadUrl: (applicationId: string) => {
+    const token = localStorage.getItem('token') || '';
+    const q = token ? `?token=${encodeURIComponent(token)}` : '';
+    return `${API_BASE}/reports/${applicationId}/download${q}`;
+  },
+
+  downloadFile: async (url: string, filename: string): Promise<void> => {
+    const token = localStorage.getItem('token');
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await fetch(url, { headers });
+    if (!response.ok) {
+      let errMsg = 'Download failed';
+      try {
+        const err = await response.json();
+        errMsg = err.detail || errMsg;
+      } catch {
+        // fallback
+      }
+      throw new Error(errMsg);
+    }
+    const blob = await response.blob();
+    const blobUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+  },
 
   // Admin
   getMetrics: () => request<AdminMetrics>('/admin/metrics'),

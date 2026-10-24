@@ -5,7 +5,7 @@ from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
 
-from app.core.deps import get_db, get_current_user
+from app.core.deps import get_db, get_current_user, get_current_user_flexible
 from app.models.user import User, UserRole
 from app.models.application import Application
 from app.models.verification import VerificationRun
@@ -77,7 +77,7 @@ def create_report(
 def download_report(
     application_id: str,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user_flexible)
 ):
     app = db.query(Application).filter(Application.id == application_id).first()
     if not app:
@@ -93,7 +93,7 @@ def download_report(
         .first()
     )
 
-    # Auto-generate if not yet generated
+    # Auto-generate if not yet generated or missing from disk (e.g. ephemeral serverless container)
     if not rep or not os.path.exists(rep.pdf_path):
         v_run = (
             db.query(VerificationRun)
@@ -107,25 +107,30 @@ def download_report(
                 detail="Verification run must be performed before report can be downloaded."
             )
         year = datetime.now(timezone.utc).year
-        report_code = f"REP-{year}-{uuid.uuid4().hex[:8].upper()}"
+        report_code = rep.report_code if rep else f"REP-{year}-{uuid.uuid4().hex[:8].upper()}"
         pdf_path = generate_pdf_report(app, v_run, report_code)
-        rep = GeneratedReport(
-            report_code=report_code,
-            application_id=app.id,
-            generated_by_id=current_user.id,
-            report_title=f"Verification Report — {app.reference_no}",
-            pdf_filename=f"{report_code}.pdf",
-            pdf_path=pdf_path,
-            verification_summary={"risk_level": v_run.risk_level, "risk_score": v_run.risk_score},
-            disclaimer="AI-Assisted Preliminary Assessment",
-            created_at=datetime.now(timezone.utc)
-        )
-        db.add(rep)
+        if not rep:
+            rep = GeneratedReport(
+                report_code=report_code,
+                application_id=app.id,
+                generated_by_id=current_user.id,
+                report_title=f"Verification Report — {app.reference_no}",
+                pdf_filename=f"{report_code}.pdf",
+                pdf_path=pdf_path,
+                verification_summary={"risk_level": v_run.risk_level, "risk_score": v_run.risk_score},
+                disclaimer="AI-Assisted Preliminary Assessment",
+                created_at=datetime.now(timezone.utc)
+            )
+            db.add(rep)
+        else:
+            rep.pdf_path = pdf_path
+            rep.pdf_filename = f"{report_code}.pdf"
         db.commit()
         db.refresh(rep)
 
     return FileResponse(
         path=rep.pdf_path,
         media_type="application/pdf",
-        filename=rep.pdf_filename
+        filename=rep.pdf_filename,
+        headers={"Content-Disposition": f'inline; filename="{rep.pdf_filename}"'}
     )

@@ -33,6 +33,7 @@ export const ApplicationDetailPage: React.FC = () => {
   const [application, setApplication] = useState<ApplicationDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [isDownloadingReport, setIsDownloadingReport] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'extraction' | 'tamper' | 'compliance' | 'history'>('overview');
 
   const fetchApplication = async () => {
@@ -63,6 +64,23 @@ export const ApplicationDetailPage: React.FC = () => {
       error(err.message || 'Verification execution failed.');
     } finally {
       setIsVerifying(false);
+    }
+  };
+
+  const handleDownloadReport = async () => {
+    if (!application) return;
+    setIsDownloadingReport(true);
+    try {
+      await api.downloadFile(
+        api.getReportDownloadUrl(application.id),
+        `Verification_Report_${application.reference_no}.pdf`
+      );
+      success('PDF report downloaded successfully.');
+    } catch (err: any) {
+      error(err.message || 'Failed to download report.');
+      window.open(api.getReportDownloadUrl(application.id), '_blank');
+    } finally {
+      setIsDownloadingReport(false);
     }
   };
 
@@ -123,15 +141,15 @@ export const ApplicationDetailPage: React.FC = () => {
 
         <div className="flex flex-wrap items-center gap-2">
           {latestRun && (
-            <a
-              href={api.getReportDownloadUrl(application.id)}
-              target="_blank"
-              rel="noreferrer"
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadReport}
+              isLoading={isDownloadingReport}
+              leftIcon={<FileDown className="w-4 h-4" />}
             >
-              <Button variant="outline" size="sm" leftIcon={<FileDown className="w-4 h-4" />}>
-                Export PDF Report
-              </Button>
-            </a>
+              Export PDF Report
+            </Button>
           )}
 
           <Button

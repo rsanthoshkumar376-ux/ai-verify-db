@@ -36,6 +36,7 @@ export const ReviewerDetailPage: React.FC = () => {
   const [application, setApplication] = useState<ApplicationDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [isDownloadingReport, setIsDownloadingReport] = useState(false);
 
   // Decision Modal
   const [decisionModalOpen, setDecisionModalOpen] = useState(false);
@@ -78,6 +79,23 @@ export const ReviewerDetailPage: React.FC = () => {
       error(err.message || 'Verification failed.');
     } finally {
       setIsVerifying(false);
+    }
+  };
+
+  const handleDownloadReport = async () => {
+    if (!application) return;
+    setIsDownloadingReport(true);
+    try {
+      await api.downloadFile(
+        api.getReportDownloadUrl(application.id),
+        `Verification_Report_${application.reference_no}.pdf`
+      );
+      success('PDF report downloaded successfully.');
+    } catch (err: any) {
+      error(err.message || 'Failed to download report.');
+      window.open(api.getReportDownloadUrl(application.id), '_blank');
+    } finally {
+      setIsDownloadingReport(false);
     }
   };
 
@@ -202,11 +220,15 @@ export const ReviewerDetailPage: React.FC = () => {
           </Button>
 
           {latestRun && (
-            <a href={api.getReportDownloadUrl(application.id)} target="_blank" rel="noreferrer">
-              <Button variant="outline" size="sm" leftIcon={<FileDown className="w-4 h-4" />}>
-                PDF Report
-              </Button>
-            </a>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadReport}
+              isLoading={isDownloadingReport}
+              leftIcon={<FileDown className="w-4 h-4" />}
+            >
+              PDF Report
+            </Button>
           )}
 
           <Button
