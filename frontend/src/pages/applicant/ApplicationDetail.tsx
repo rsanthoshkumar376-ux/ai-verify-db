@@ -16,7 +16,7 @@ import {
   FileDown
 } from 'lucide-react';
 import { api } from '../../services/api';
-import { ApplicationDetail, VerificationRun } from '../../types';
+import { ApplicationDetail, VerificationRun, DocumentItem } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
@@ -34,6 +34,7 @@ export const ApplicationDetailPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isDownloadingReport, setIsDownloadingReport] = useState(false);
+  const [downloadingDocId, setDownloadingDocId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'extraction' | 'tamper' | 'compliance' | 'history'>('overview');
 
   const fetchApplication = async () => {
@@ -81,6 +82,18 @@ export const ApplicationDetailPage: React.FC = () => {
       window.open(api.getReportDownloadUrl(application.id), '_blank');
     } finally {
       setIsDownloadingReport(false);
+    }
+  };
+
+  const handleDownloadDoc = async (doc: DocumentItem) => {
+    setDownloadingDocId(doc.id);
+    try {
+      await api.downloadFile(api.getDocumentDownloadUrl(doc.id), doc.original_filename);
+      success(`Downloaded ${doc.original_filename}`);
+    } catch {
+      window.open(api.getDocumentDownloadUrl(doc.id), '_blank');
+    } finally {
+      setDownloadingDocId(null);
     }
   };
 
@@ -279,16 +292,16 @@ export const ApplicationDetailPage: React.FC = () => {
                         </div>
                       </div>
 
-                      <a
-                        href={api.getDocumentDownloadUrl(doc.id)}
-                        target="_blank"
-                        rel="noreferrer"
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDownloadDoc(doc)}
+                        isLoading={downloadingDocId === doc.id}
+                        leftIcon={<Download className="w-3.5 h-3.5" />}
                         className="shrink-0"
                       >
-                        <Button variant="outline" size="sm" leftIcon={<Download className="w-3.5 h-3.5" />}>
-                          Download File
-                        </Button>
-                      </a>
+                        Download File
+                      </Button>
                     </div>
                   ))
                 )}

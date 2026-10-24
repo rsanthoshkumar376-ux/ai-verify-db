@@ -18,7 +18,7 @@ import {
   FileDown
 } from 'lucide-react';
 import { api } from '../../services/api';
-import { ApplicationDetail } from '../../types';
+import { ApplicationDetail, DocumentItem } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
@@ -37,6 +37,7 @@ export const ReviewerDetailPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isDownloadingReport, setIsDownloadingReport] = useState(false);
+  const [downloadingDocId, setDownloadingDocId] = useState<string | null>(null);
 
   // Decision Modal
   const [decisionModalOpen, setDecisionModalOpen] = useState(false);
@@ -96,6 +97,18 @@ export const ReviewerDetailPage: React.FC = () => {
       window.open(api.getReportDownloadUrl(application.id), '_blank');
     } finally {
       setIsDownloadingReport(false);
+    }
+  };
+
+  const handleDownloadDoc = async (doc: DocumentItem) => {
+    setDownloadingDocId(doc.id);
+    try {
+      await api.downloadFile(api.getDocumentDownloadUrl(doc.id), doc.original_filename);
+      success(`Downloaded ${doc.original_filename}`);
+    } catch {
+      window.open(api.getDocumentDownloadUrl(doc.id), '_blank');
+    } finally {
+      setDownloadingDocId(null);
     }
   };
 
@@ -394,11 +407,15 @@ export const ReviewerDetailPage: React.FC = () => {
                     Type: {doc.document_type} • {(doc.file_size / 1024).toFixed(1)} KB
                   </div>
                   <div className="pt-2 border-t border-slate-200 flex justify-end">
-                    <a href={api.getDocumentDownloadUrl(doc.id)} target="_blank" rel="noreferrer">
-                      <Button variant="outline" size="sm" leftIcon={<Download className="w-3.5 h-3.5" />}>
-                        Inspect Original
-                      </Button>
-                    </a>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDownloadDoc(doc)}
+                      isLoading={downloadingDocId === doc.id}
+                      leftIcon={<Download className="w-3.5 h-3.5" />}
+                    >
+                      Inspect Original
+                    </Button>
                   </div>
                 </div>
               ))}

@@ -87,19 +87,16 @@ def get_current_user_flexible(
     token_query: Optional[str] = Query(None, alias="token"),
     token_bearer: Optional[str] = Depends(oauth2_scheme_optional),
     db: Session = Depends(get_db)
-) -> User:
+) -> Optional[User]:
     token = token_bearer or token_query
     if not token:
         auth_header = request.headers.get("Authorization")
         if auth_header and auth_header.startswith("Bearer "):
             token = auth_header.split(" ", 1)[1]
 
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials or token expired",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
     if not token:
+        if settings.DEMO_MODE:
+            return db.query(User).filter(User.email == "applicant@aiverify.org").first()
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Not authenticated",
@@ -109,9 +106,21 @@ def get_current_user_flexible(
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         user_id: str = payload.get("sub")
         if user_id is None:
-            raise credentials_exception
+            if settings.DEMO_MODE:
+                return db.query(User).filter(User.email == "applicant@aiverify.org").first()
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials or token expired",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
     except JWTError:
-        raise credentials_exception
+        if settings.DEMO_MODE:
+            return db.query(User).filter(User.email == "applicant@aiverify.org").first()
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials or token expired",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
     user = db.query(User).filter(User.id == user_id).first()
     if user is None:
@@ -127,8 +136,15 @@ def get_current_user_flexible(
         elif token_role == UserRole.ADMIN.value:
             user = db.query(User).filter(User.email == "admin@aiverify.org").first()
 
+    if user is None and settings.DEMO_MODE:
+        user = db.query(User).filter(User.email == "applicant@aiverify.org").first()
+
     if user is None:
-        raise credentials_exception
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials or token expired",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     if not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
