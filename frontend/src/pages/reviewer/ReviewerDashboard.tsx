@@ -11,6 +11,8 @@ import {
   ShieldCheck,
   UserCheck,
   Download,
+  Sparkles,
+  X
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { ApplicationListItem } from '../../types';
@@ -19,6 +21,7 @@ import { Button } from '../../components/ui/Button';
 import { StatusBadge, RiskBadge } from '../../components/ui/Badge';
 import { TableSkeleton } from '../../components/common/LoadingSkeleton';
 import { EmptyState } from '../../components/common/EmptyState';
+import { useToast } from '../../context/ToastContext';
 
 export const ReviewerDashboard: React.FC = () => {
   const [applications, setApplications] = useState<ApplicationListItem[]>([]);
@@ -26,6 +29,9 @@ export const ReviewerDashboard: React.FC = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [riskFilter, setRiskFilter] = useState('');
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [isBulkProcessing, setIsBulkProcessing] = useState(false);
+  const { success, error } = useToast();
 
   const fetchQueue = async () => {
     setIsLoading(true);
@@ -81,6 +87,65 @@ export const ReviewerDashboard: React.FC = () => {
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
     link.setAttribute('download', `ai_verify_applications_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === filteredApps.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filteredApps.map((a) => a.id));
+    }
+  };
+
+  const toggleSelectOne = (appId: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(appId) ? prev.filter((i) => i !== appId) : [...prev, appId]
+    );
+  };
+
+  const handleBulkApprove = async () => {
+    if (selectedIds.length === 0) return;
+    setIsBulkProcessing(true);
+    try {
+      for (const appId of selectedIds) {
+        await api.recordDecision(appId, {
+          decision: 'VERIFIED',
+          reason: 'Bulk Fast-Track Adjudication',
+          explanation: 'Batch approved under standard institutional compliance parameters.'
+        });
+      }
+      success(`Successfully verified ${selectedIds.length} applications.`);
+      setSelectedIds([]);
+      await fetchQueue();
+    } catch (err: any) {
+      error(err.message || 'Bulk adjudication encountered an error.');
+    } finally {
+      setIsBulkProcessing(false);
+    }
+  };
+
+  const handleExportSelectedCSV = () => {
+    const targetApps = filteredApps.filter((a) => selectedIds.includes(a.id));
+    if (targetApps.length === 0) return;
+    const headers = ['Reference No', 'Category', 'Applicant', 'Status', 'Risk Score', 'Created At'];
+    const rows = targetApps.map((a) => [
+      `"${a.reference_no}"`,
+      `"${a.category_name || ''}"`,
+      `"${a.applicant_name || ''}"`,
+      `"${a.status}"`,
+      `"${a.current_risk_score || 'N/A'}"`,
+      `"${new Date(a.created_at).toISOString()}"`
+    ]);
+    const csvContent =
+      'data:text/csv;charset=utf-8,' +
+      [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `ai_verify_selected_${new Date().toISOString().split('T')[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -200,6 +265,48 @@ export const ReviewerDashboard: React.FC = () => {
         </CardHeader>
 
         <CardContent className="p-0">
+          {/* Sticky Bulk Action Floating Bar */}
+          {selectedIds.length > 0 && (
+            <div className="p-3 bg-indigo-50 dark:bg-indigo-950/70 border-b border-indigo-100 dark:border-indigo-900 flex flex-wrap items-center justify-between gap-3 animate-in fade-in duration-150">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse" />
+                <span className="text-xs font-bold text-indigo-950 dark:text-indigo-200">
+                  {selectedIds.length} application{selectedIds.length > 1 ? 's' : ''} selected for batch action
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleBulkApprove}
+                  isLoading={isBulkProcessing}
+                  leftIcon={<Sparkles className="w-3.5 h-3.5" />}
+                  className="text-xs"
+                >
+                  Fast-Track Verify ({selectedIds.length})
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExportSelectedCSV}
+                  leftIcon={<Download className="w-3.5 h-3.5" />}
+                  className="text-xs"
+                >
+                  Export CSV
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedIds([])}
+                  leftIcon={<X className="w-3.5 h-3.5" />}
+                  className="text-xs"
+                >
+                  Clear Selection
+                </Button>
+              </div>
+            </div>
+          )}
+
           {isLoading ? (
             <TableSkeleton rows={4} cols={5} />
           ) : filteredApps.length === 0 ? (
@@ -212,6 +319,17 @@ export const ReviewerDashboard: React.FC = () => {
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
                   <tr className="bg-slate-50/80 dark:bg-slate-800/60 border-b border-slate-200/80 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold uppercase text-[11px]">
+                    <th className="py-3 px-3 w-10 text-center">
+                      <input
+                        type="checkbox"
+                        checked={
+                          filteredApps.length > 0 && selectedIds.length === filteredApps.length
+                        }
+                        onChange={toggleSelectAll}
+                        className="rounded border-slate-300 dark:border-slate-700 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                        title="Select All"
+                      />
+                    </th>
                     <th className="py-3 px-5">Reference</th>
                     <th className="py-3 px-4">Applicant & Title</th>
                     <th className="py-3 px-4">Category</th>
@@ -223,7 +341,20 @@ export const ReviewerDashboard: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {filteredApps.map((app) => (
-                    <tr key={app.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                    <tr
+                      key={app.id}
+                      className={`hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors ${
+                        selectedIds.includes(app.id) ? 'bg-indigo-50/30 dark:bg-indigo-950/20' : ''
+                      }`}
+                    >
+                      <td className="py-3.5 px-3 text-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.includes(app.id)}
+                          onChange={() => toggleSelectOne(app.id)}
+                          className="rounded border-slate-300 dark:border-slate-700 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                        />
+                      </td>
                       <td className="py-3.5 px-5 font-mono font-bold text-slate-900 dark:text-white">
                         {app.reference_no}
                       </td>

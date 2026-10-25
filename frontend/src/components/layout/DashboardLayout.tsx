@@ -10,6 +10,7 @@ import {
   Clock,
   Shield,
   Menu,
+  Search,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
@@ -117,6 +118,17 @@ export const DashboardLayout: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-3">
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
+                className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-800/80 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-slate-700 transition-colors cursor-pointer"
+                title="Search or jump to command (Ctrl+K or ⌘K)"
+              >
+                <Search className="w-3.5 h-3.5 text-slate-400" />
+                <span className="font-medium">Command Palette</span>
+                <kbd className="px-1.5 py-0.5 rounded bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 font-mono text-[10px]">
+                  ⌘K
+                </kbd>
+              </button>
               <ThemeToggle />
               {/* Notification Popover */}
               <div className="relative">

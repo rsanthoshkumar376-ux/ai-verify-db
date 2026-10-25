@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShieldCheck, Menu, X, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, Menu, X, ArrowRight, CheckCircle2, Search } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '../ui/Button';
 import { ThemeToggle } from './ThemeToggle';
@@ -61,6 +61,17 @@ export const Navbar: React.FC = () => {
 
         {/* Desktop CTAs */}
         <div className="hidden md:flex items-center gap-3">
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
+            className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/80 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-slate-700 transition-colors shadow-2xs cursor-pointer"
+            title="Open Command Palette (Ctrl+K or ⌘K)"
+          >
+            <Search className="w-3.5 h-3.5 text-slate-400" />
+            <span className="font-medium">Quick Find</span>
+            <kbd className="px-1.5 py-0.5 rounded bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 font-mono text-[10px]">
+              ⌘K
+            </kbd>
+          </button>
           <ThemeToggle />
           <NotificationDropdown />
           {user ? (

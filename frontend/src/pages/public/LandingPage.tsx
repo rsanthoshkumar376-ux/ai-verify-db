@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ShieldCheck,
@@ -13,13 +13,66 @@ import {
   AlertTriangle,
   ChevronRight,
   Eye,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Copy,
+  Check,
+  Terminal,
+  Calculator,
+  TrendingUp,
+  Sparkles,
+  Clock,
+  DollarSign
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { LiveScannerSandbox } from '../../components/common/LiveScannerSandbox';
 
 export const LandingPage: React.FC = () => {
+  const [monthlyVolume, setMonthlyVolume] = useState<number>(3500);
+  const [officerHourlyRate, setOfficerHourlyRate] = useState<number>(28);
+  const [apiTab, setApiTab] = useState<'curl' | 'python' | 'ts'>('curl');
+  const [hasCopied, setHasCopied] = useState<boolean>(false);
+
+  // ROI math
+  const manualMinutesPerCase = 24;
+  const automatedMinutesPerCase = 0.5;
+  const minutesSavedPerCase = manualMinutesPerCase - automatedMinutesPerCase;
+  const hoursSavedPerMonth = Math.round((monthlyVolume * minutesSavedPerCase) / 60);
+  const monthlyCostSavings = Math.round(hoursSavedPerMonth * officerHourlyRate);
+  const annualCostSavings = monthlyCostSavings * 12;
+
+  const snippets = {
+    curl: `curl -X GET "https://ai-verify-db.vercel.app/api/v1/applications/verify/AIV-SCH-2026-81923" \\
+  -H "Accept: application/json" \\
+  -H "X-Client-Signature: aiv_sec_live_948a"`,
+    python: `import requests
+
+url = "https://ai-verify-db.vercel.app/api/v1/applications/verify/AIV-SCH-2026-81923"
+headers = {"X-Client-Signature": "aiv_sec_live_948a"}
+
+response = requests.get(url, headers=headers)
+data = response.json()
+
+print(f"Status: {data['status']} | Verified At: {data['verified_at']}")
+print(f"SHA-256 Fingerprint: {data['cryptographic_fingerprint']}")`,
+    ts: `import { verifyCredential } from '@ai-verify/sdk';
+
+const response = await fetch(
+  'https://ai-verify-db.vercel.app/api/v1/applications/verify/AIV-SCH-2026-81923',
+  {
+    headers: { 'X-Client-Signature': 'aiv_sec_live_948a' }
+  }
+);
+const credential = await response.json();
+console.log(credential.determination, credential.cryptographic_fingerprint);`
+  };
+
+  const copyCode = (code: string) => {
+    navigator.clipboard.writeText(code);
+    setHasCopied(true);
+    setTimeout(() => setHasCopied(false), 2000);
+  };
+
   const faqs = [
     {
       q: 'Does AI Verify make automated adverse decisions or legal determinations?',
@@ -272,6 +325,227 @@ export const LandingPage: React.FC = () => {
               <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                 Authorized compliance officers verify findings side-by-side, record reasoned decisions, request additional information if needed, and export formal PDF reports.
               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Interactive Enterprise ROI & Cost Reduction Calculator */}
+      <section className="py-20 bg-slate-100/70 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 transition-colors">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs font-semibold mb-3">
+              <Calculator className="w-3.5 h-3.5" />
+              Institutional Financial Impact
+            </div>
+            <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              Interactive Compliance ROI Calculator
+            </h3>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+              Calculate projected labor savings and compliance velocity by automating first-pass document extraction and deterministic rule evaluation.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center max-w-5xl mx-auto">
+            {/* Sliders Input Column */}
+            <div className="lg:col-span-6 bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                    <FileCheck className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                    Monthly Application Volume
+                  </label>
+                  <span className="text-base font-extrabold font-mono text-indigo-600 dark:text-indigo-400">
+                    {monthlyVolume.toLocaleString()} apps/mo
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="200"
+                  max="20000"
+                  step="100"
+                  value={monthlyVolume}
+                  onChange={(e) => setMonthlyVolume(Number(e.target.value))}
+                  className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                />
+                <div className="flex justify-between text-[10px] text-slate-400 mt-1 font-mono">
+                  <span>200</span>
+                  <span>10,000</span>
+                  <span>20,000+</span>
+                </div>
+              </div>
+
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                    <DollarSign className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    Reviewer Loaded Wage
+                  </label>
+                  <span className="text-base font-extrabold font-mono text-emerald-600 dark:text-emerald-400">
+                    ${officerHourlyRate}/hr
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="15"
+                  max="90"
+                  step="1"
+                  value={officerHourlyRate}
+                  onChange={(e) => setOfficerHourlyRate(Number(e.target.value))}
+                  className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                />
+                <div className="flex justify-between text-[10px] text-slate-400 mt-1 font-mono">
+                  <span>$15/hr</span>
+                  <span>$50/hr</span>
+                  <span>$90/hr</span>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-xs text-slate-500 dark:text-slate-400 space-y-1">
+                <div className="flex justify-between">
+                  <span>Manual review baseline:</span>
+                  <strong className="text-slate-800 dark:text-slate-200 font-mono">24.0 mins/case</strong>
+                </div>
+                <div className="flex justify-between">
+                  <span>With AI Verify pre-screening:</span>
+                  <strong className="text-indigo-600 dark:text-indigo-400 font-mono">30 secs/case</strong>
+                </div>
+              </div>
+            </div>
+
+            {/* Calculated Output Cards */}
+            <div className="lg:col-span-6 grid grid-cols-2 gap-4">
+              <div className="p-5 rounded-2xl bg-indigo-600 text-white shadow-lg space-y-1 col-span-2">
+                <span className="text-xs font-medium text-indigo-100 uppercase tracking-wider flex items-center gap-1">
+                  <TrendingUp className="w-3.5 h-3.5" /> Projected Annual Net Savings
+                </span>
+                <div className="text-3xl sm:text-4xl font-black font-mono tracking-tight">
+                  ${annualCostSavings.toLocaleString()}
+                </div>
+                <p className="text-xs text-indigo-200 mt-1">
+                  Based on ${monthlyCostSavings.toLocaleString()} in monthly recovered compliance officer hours.
+                </p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5 text-blue-500" /> Hours Saved
+                </span>
+                <div className="text-2xl font-black font-mono text-slate-900 dark:text-white">
+                  {hoursSavedPerMonth.toLocaleString()} hrs
+                </div>
+                <p className="text-[11px] text-slate-400">Monthly freed bandwidth</p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-500" /> Speedup
+                </span>
+                <div className="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400">
+                  98% faster
+                </div>
+                <p className="text-[11px] text-slate-400">Turnaround acceleration</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Developer REST API & Public Credential Registry Section */}
+      <section className="py-20 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 transition-colors">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-semibold mb-3 border border-slate-200 dark:border-slate-700">
+              <Terminal className="w-3.5 h-3.5 text-indigo-500" />
+              Developer & API Integration
+            </div>
+            <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              Programmatic Credential Verification
+            </h3>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+              Seamlessly integrate automated credential validation and tamper checks directly into your internal workflows, portals, or mobile apps via REST.
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto bg-slate-900 rounded-2xl border border-slate-800 shadow-2xl overflow-hidden">
+            {/* Tab header */}
+            <div className="px-4 py-3 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setApiTab('curl')}
+                  className={`px-3 py-1 rounded-lg text-xs font-mono font-medium transition-colors ${
+                    apiTab === 'curl'
+                      ? 'bg-indigo-600 text-white'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                  }`}
+                >
+                  cURL
+                </button>
+                <button
+                  onClick={() => setApiTab('python')}
+                  className={`px-3 py-1 rounded-lg text-xs font-mono font-medium transition-colors ${
+                    apiTab === 'python'
+                      ? 'bg-indigo-600 text-white'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                  }`}
+                >
+                  Python
+                </button>
+                <button
+                  onClick={() => setApiTab('ts')}
+                  className={`px-3 py-1 rounded-lg text-xs font-mono font-medium transition-colors ${
+                    apiTab === 'ts'
+                      ? 'bg-indigo-600 text-white'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                  }`}
+                >
+                  TypeScript
+                </button>
+              </div>
+
+              <button
+                onClick={() => copyCode(snippets[apiTab])}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                {hasCopied ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <span className="text-emerald-400 font-medium">Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>Copy Snippet</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Code Body */}
+            <div className="p-5 font-mono text-xs text-slate-300 overflow-x-auto bg-slate-900/90 leading-relaxed">
+              <pre>{snippets[apiTab]}</pre>
+            </div>
+
+            {/* Live Verification API Output preview */}
+            <div className="px-5 py-4 bg-slate-950/80 border-t border-slate-800/80">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-mono uppercase text-emerald-400 font-bold flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> HTTP 200 OK — Verified Response Payload
+                </span>
+                <span className="text-[10px] font-mono text-slate-500">14ms latency</span>
+              </div>
+              <pre className="text-[11px] font-mono text-slate-400 overflow-x-auto bg-slate-900 p-3 rounded-xl border border-slate-800">
+{`{
+  "is_valid": true,
+  "reference_no": "AIV-SCH-2026-81923",
+  "category_name": "Academic & Research Fellowship",
+  "status": "VERIFIED",
+  "risk_level": "LOW",
+  "cryptographic_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "compliance_officer": "Marcus Vance (Senior Officer)",
+  "issuing_authority": "AI Verify Cryptographic Verification Authority (v1.0)"
+}`}
+              </pre>
             </div>
           </div>
         </div>

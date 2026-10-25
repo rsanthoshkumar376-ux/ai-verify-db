@@ -82,6 +82,25 @@ export const api = {
   // Applications
   getCategories: () => request<ApplicationCategory[]>('/applications/categories'),
 
+  verifyPublicCredential: (refOrId: string) =>
+    request<{
+      is_valid: boolean;
+      application_id: string;
+      reference_no: string;
+      title: string;
+      category_name: string;
+      category_code: string;
+      status: string;
+      risk_level: string;
+      submitted_at: string;
+      verified_at: string;
+      issuing_authority: string;
+      cryptographic_fingerprint: string;
+      document_count: number;
+      determination: string;
+      compliance_officer: string;
+    }>(`/applications/verify/${encodeURIComponent(refOrId)}`),
+
   listApplications: (params?: { status?: string; category_id?: string; search?: string }) => {
     const q = new URLSearchParams();
     if (params?.status) q.append('status', params.status);

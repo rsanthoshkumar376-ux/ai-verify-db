@@ -17,7 +17,8 @@ import { HowItWorksPage } from './pages/public/HowItWorksPage';
 import { AboutPage } from './pages/public/AboutPage';
 import { ContactPage } from './pages/public/ContactPage';
 import { PrivacyPolicyPage, TermsOfServicePage } from './pages/public/LegalPages';
-import { VerificationPortal } from './pages/public/VerificationPortal';
+import { PublicVerificationPage } from './pages/public/PublicVerificationPage';
+import { CommandPalette } from './components/common/CommandPalette';
 
 // Auth Pages
 import { LoginPage } from './pages/auth/LoginPage';
@@ -42,7 +43,7 @@ import { AuditLogsPage } from './pages/admin/AuditLogsPage';
 // Public Layout Wrapper
 const PublicLayout: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 transition-colors">
       <Navbar />
       <main className="flex-1">
         <Outlet />
@@ -82,14 +83,15 @@ export const App: React.FC = () => {
         <NotificationProvider>
           <ToastProvider>
             <BrowserRouter>
+              <CommandPalette />
               <Routes>
                 {/* Public Marketing Routes */}
                 <Route element={<PublicLayout />}>
                   <Route path="/" element={<LandingPage />} />
                   <Route path="/how-it-works" element={<HowItWorksPage />} />
                   <Route path="/about" element={<AboutPage />} />
-                  <Route path="/verify" element={<VerificationPortal />} />
-                  <Route path="/verify/:reportCode" element={<VerificationPortal />} />
+                  <Route path="/verify" element={<PublicVerificationPage />} />
+                  <Route path="/verify/:code" element={<PublicVerificationPage />} />
                   <Route path="/contact" element={<ContactPage />} />
                   <Route path="/privacy" element={<PrivacyPolicyPage />} />
                   <Route path="/terms" element={<TermsOfServicePage />} />

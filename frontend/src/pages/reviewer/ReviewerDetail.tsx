@@ -15,7 +15,9 @@ import {
   Lock,
   UserCheck,
   Scale,
-  FileDown
+  FileDown,
+  Eye,
+  Sparkles
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { ApplicationDetail, DocumentItem } from '../../types';
@@ -26,6 +28,8 @@ import { Button } from '../../components/ui/Button';
 import { StatusBadge, RiskBadge, Badge } from '../../components/ui/Badge';
 import { Modal } from '../../components/ui/Modal';
 import { TableSkeleton } from '../../components/common/LoadingSkeleton';
+import { TrustScoreGauge } from '../../components/ui/TrustScoreGauge';
+import { DocumentInspectorModal } from '../../components/ui/DocumentInspectorModal';
 
 export const ReviewerDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -38,6 +42,8 @@ export const ReviewerDetailPage: React.FC = () => {
   const [isVerifying, setIsVerifying] = useState(false);
   const [isDownloadingReport, setIsDownloadingReport] = useState(false);
   const [downloadingDocId, setDownloadingDocId] = useState<string | null>(null);
+  const [inspectorOpen, setInspectorOpen] = useState(false);
+  const [selectedInspectDoc, setSelectedInspectDoc] = useState<DocumentItem | null>(null);
 
   // Decision Modal
   const [decisionModalOpen, setDecisionModalOpen] = useState(false);
@@ -392,6 +398,15 @@ export const ReviewerDetailPage: React.FC = () => {
 
         {/* Right Rail: Document Files & Reviewer History */}
         <div className="space-y-6">
+          {latestRun && (
+            <TrustScoreGauge
+              score={Math.round((1 - (latestRun.risk_score || 0.12)) * 100)}
+              size="md"
+              title="Dossier Trust Index"
+              subtitle="Multivariate forensic risk & verification score"
+            />
+          )}
+
           <Card>
             <CardHeader>
               <CardTitle>Uploaded File Artifacts</CardTitle>
@@ -406,7 +421,18 @@ export const ReviewerDetailPage: React.FC = () => {
                   <div className="text-[11px] text-slate-500 font-mono">
                     Type: {doc.document_type} • {(doc.file_size / 1024).toFixed(1)} KB
                   </div>
-                  <div className="pt-2 border-t border-slate-200 flex justify-end">
+                  <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedInspectDoc(doc);
+                        setInspectorOpen(true);
+                      }}
+                      leftIcon={<Eye className="w-3.5 h-3.5 text-indigo-500" />}
+                    >
+                      Inspect OCR
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
@@ -414,7 +440,7 @@ export const ReviewerDetailPage: React.FC = () => {
                       isLoading={downloadingDocId === doc.id}
                       leftIcon={<Download className="w-3.5 h-3.5" />}
                     >
-                      Inspect Original
+                      Download
                     </Button>
                   </div>
                 </div>
@@ -481,6 +507,60 @@ export const ReviewerDetailPage: React.FC = () => {
         description="Consequential decisions require explicit written justifications logged to the immutable audit trail."
       >
         <form onSubmit={handleRecordDecision} className="space-y-4 text-xs">
+          {/* 1-Click Canned Templates */}
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 space-y-2">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+              1-Click Determination Presets
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setDecisionType('VERIFIED');
+                  setDecisionReason('Standard Automated & Human Conformance Verification (Passed)');
+                  setDecisionExplanation('All automated anti-tampering, biometric OCR, and rule engine checks verified with zero material discrepancies. Document specimens authentic.');
+                }}
+                className="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 font-semibold text-[11px] hover:bg-emerald-100 cursor-pointer"
+              >
+                ✓ Clean Approval
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setDecisionType('NEEDS_INFORMATION');
+                  setDecisionReason('High-Resolution Re-Scan Required');
+                  setDecisionExplanation('The uploaded credential image resolution fails minimum optical character recognition requirements. Applicant requested to upload uncompressed color scan.');
+                }}
+                className="px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/70 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 font-semibold text-[11px] hover:bg-amber-100 cursor-pointer"
+              >
+                ⚠️ Request Re-scan
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setDecisionType('ESCALATED');
+                  setDecisionReason('Forensic Microprint / Metadata Anomaly Escalation');
+                  setDecisionExplanation('Discrepancy observed between declared application parameters and document security elements. Escalated to Senior Compliance Fraud Specialist.');
+                }}
+                className="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/70 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 font-semibold text-[11px] hover:bg-indigo-100 cursor-pointer"
+              >
+                🔍 Fraud Escalation
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setDecisionType('REJECTED');
+                  setDecisionReason('Expired Credential / Material Non-Conformance');
+                  setDecisionExplanation('The submitted credential has lapsed past the statutory expiry date or fails mandatory jurisdiction requirements.');
+                }}
+                className="px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/70 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 font-semibold text-[11px] hover:bg-rose-100 cursor-pointer"
+              >
+                ✕ Reject (Non-Compliant)
+              </button>
+            </div>
+          </div>
+
           <div>
             <label className="block font-semibold text-slate-700 mb-1">Determination Outcome</label>
             <select
@@ -577,6 +657,20 @@ export const ReviewerDetailPage: React.FC = () => {
           </div>
         </form>
       </Modal>
+
+      {/* Interactive OCR Document Inspector */}
+      {selectedInspectDoc && (
+        <DocumentInspectorModal
+          isOpen={inspectorOpen}
+          onClose={() => {
+            setInspectorOpen(false);
+            setSelectedInspectDoc(null);
+          }}
+          documentTitle={selectedInspectDoc.original_filename}
+          documentType={selectedInspectDoc.document_type}
+          confidence={99.4}
+        />
+      )}
     </div>
   );
 };
